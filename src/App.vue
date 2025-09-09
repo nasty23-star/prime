@@ -4,10 +4,13 @@ import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const value = ref('')
+const updateData = () => {
+  console.log('click')
+}
 </script>
 
 <template>
-  <Button label="Update" icon="pi pi-refresh" iconPos="bottom" />
+  <Button label="Update" icon="pi pi-refresh" iconPos="bottom" @click="updateData" />
   <div>
     <Card style="width: 25rem; overflow: hidden">
       <template #header>
