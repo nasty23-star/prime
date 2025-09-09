@@ -4,40 +4,68 @@ import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const value = ref('')
+const title = ref('title')
+const raiting = ref(0)
+const author = ref('vasya')
+const date = ref('15nov')
 const updateData = () => {
   console.log('click')
 }
 </script>
 
 <template>
-  <Button label="Update" icon="pi pi-refresh" iconPos="bottom" @click="updateData" />
-  <div>
-    <Card style="width: 25rem; overflow: hidden">
-      <template #header>
-        <img alt="user header" src="" />
-      </template>
-      <template #title>Advanced Card</template>
-      <template #subtitle>Card subtitle</template>
-      <template #content>
-        <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
-          repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa
-          ratione quam perferendis esse, cupiditate neque quas!
-        </p>
-      </template>
-      <template #footer>
-        <div class="flex gap-4 mt-1">
-          <Button label="Cancel" severity="secondary" variant="outlined" class="w-full" />
-          <Button label="Save" class="w-full" />
-        </div>
-      </template>
-    </Card>
+  <div class="container">
+    <header>
+      <Button
+        label="Update"
+        icon="pi pi-refresh"
+        iconPos="right"
+        size="large"
+        @click="updateData"
+      />
+    </header>
+    <div>
+      <Card class="card">
+        <template #header>
+          <i class="pi pi-bolt"></i>
+        </template>
+        <template #title>{{ title }}</template>
+
+        <template #content>
+          <div class="raiting">{{ raiting }}</div>
+          <div class="author">{{ author }}</div>
+        </template>
+        <template #footer>
+          {{ date }}
+        </template>
+      </Card>
+    </div>
   </div>
 </template>
 
 <style scoped>
-div {
+.container {
+  padding: 20px;
+}
+header {
   display: flex;
-  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+.card {
+  width: auto;
+  overflow: hidden;
+  padding: 20px;
+}
+i {
+  display: flex;
+  justify-content: center;
+}
+.raiting {
+  margin-top: 4px;
+}
+.author {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 </style>
