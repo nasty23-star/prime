@@ -1,16 +1,39 @@
 <script setup lang="ts">
 import Card from 'primevue/card'
 import Button from 'primevue/button'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const value = ref('')
 const title = ref('title')
 const raiting = ref(0)
 const author = ref('vasya')
 const date = ref('15nov')
-const updateData = () => {
-  console.log('click')
+const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
+const getData = async (url: RequestInfo | URL) => {
+  try {
+    const response = await fetch(url)
+
+    const json = await response.json()
+    const promises = json
+      .slice(0, 10)
+      .map((id: any) =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
+          response.json(),
+        ),
+      )
+    const result = await Promise.all(promises)
+    console.dir(result)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    throw error // Re-throw to propagate the error
+  }
 }
+
+const updateData = () => {
+  getData(url)
+}
+
+onMounted(() => getData(url))
 </script>
 
 <template>
