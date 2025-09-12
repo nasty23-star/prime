@@ -1,0 +1,11 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+#app {
+  block-size: 100dvh;
+}
+body {
+  background: #a2f8fa;
+}
