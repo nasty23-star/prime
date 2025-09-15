@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
@@ -14,12 +14,18 @@ interface NewsItem {
   url?: string
   text?: string
   deleted?: boolean
+  descendants?: number // число общих
+  kids?: number[]
 }
 
 const newsItem = ref<NewsItem | null>(null)
 const route = useRoute()
 const router = useRouter()
 const itemId = route.params.id
+
+const commentsCount = computed(() => {
+  return newsItem.value?.descendants ?? 0
+})
 
 const fetchNewsItem = async () => {
   try {
@@ -49,7 +55,6 @@ onMounted(() => {
       @click="backToMain"
       class="back-btn"
     />
-
     <div v-if="!newsItem" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading news item...</p>
@@ -89,12 +94,18 @@ onMounted(() => {
               <span class="info-label">Author:</span>
               <span class="info-value">{{ newsItem.by }}</span>
             </div>
-
             <div v-if="newsItem.url" class="info-item">
               <i class="pi pi-link info-icon"></i>
               <span class="info-label">URL:</span>
               <a :href="newsItem.url" target="_blank" class="news-url">{{ newsItem.url }}</a>
             </div>
+          </div>
+
+          <div class='info-item'>
+            <i class="pi pi-lcomments info-icon"></i>
+            <span class="info-label">Comments count:</span>
+              <span class="info-value">{{ commentsCount }}</span>
+
           </div>
         </template>
 
@@ -115,7 +126,6 @@ onMounted(() => {
           </div>
         </template>
       </Card>
-
       <div v-if="newsItem.text" class="news-text-content">
         <h3>Content:</h3>
         <div class="text-content" v-html="newsItem.text"></div>
