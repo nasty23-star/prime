@@ -4,6 +4,7 @@ import { onMounted, ref, computed } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
+import RecursiveComments from '@/components/RecursiveComments.vue'
 
 interface NewsItem {
   id: number
@@ -14,15 +15,36 @@ interface NewsItem {
   url?: string
   text?: string
   deleted?: boolean
-  descendants?: number // число общих
+  descendants?: number
   kids?: number[]
+}
+
+interface NHComment {
+  id: number
+
+  by?: string
+
+  text?: string
+
+  time?: number
+
+  type: string
+
+  kids?: number[]
+
+  deleted?: boolean
+
+  dead?: boolean
+
+  replies?: NHComment[]
 }
 
 const newsItem = ref<NewsItem | null>(null)
 const route = useRoute()
 const router = useRouter()
 const itemId = route.params.id
-
+const loadingComments = ref(false)
+const comments = ref<NHComment[]>([])
 const commentsCount = computed(() => {
   return newsItem.value?.descendants ?? 0
 })
@@ -31,10 +53,68 @@ const fetchNewsItem = async () => {
   try {
     const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${itemId}.json`)
     newsItem.value = await response.json()
+    // После загрузки новости загружаем комментарии
+    if (newsItem.value?.kids && newsItem.value.kids.length > 0) {
+      await fetchRootComments(newsItem.value.kids)
+    }
   } catch (error) {
     console.error('Error fetching news item:', error)
   }
 }
+// Функция для загрузки корневых комментариев
+const fetchRootComments = async (commentIds: number[]) => {
+  loadingComments.value = true
+  try {
+    const commentPromises = commentIds.map((id) => fetchComments(id))
+    const rootComments = await Promise.all(commentPromises)
+    comments.value = rootComments.filter((comment): comment is NHComment => comment !== null)
+  } catch (error) {
+    console.error('Error fetching root comments:', error)
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+const fetchComments = async (id: number) => {
+  try {
+    loadingComments.value = true
+    const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
+    const json = await response.json()
+    const item = json
+
+    if (item.dead || item.deleted) {
+      return null
+    }
+
+    const comment: NHComment = {
+      id: item.id,
+
+      by: item.by,
+
+      text: item.text,
+
+      time: item.time,
+
+      type: item.type,
+
+      replies: [],
+    }
+
+    if (item.kids && item.kids.length > 0) {
+      const childPromises = item.kids.map((childId: number) => fetchComments(childId))
+      const childComments = await Promise.all(childPromises)
+      comment.replies = childComments.filter((child): child is NHComment => child !== null)
+    }
+
+    return comment
+  } catch (error) {
+    console.error('Error fetching comments:', error)
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+const refreshComments = async () => {}
 
 const backToMain = () => {
   router.push('/')
@@ -101,11 +181,10 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class='info-item'>
-            <i class="pi pi-lcomments info-icon"></i>
+          <div class="info-item">
+            <i class="pi pi-comments info-icon"></i>
             <span class="info-label">Comments count:</span>
-              <span class="info-value">{{ commentsCount }}</span>
-
+            <span class="info-value">{{ commentsCount }}</span>
           </div>
         </template>
 
@@ -126,9 +205,43 @@ onMounted(() => {
           </div>
         </template>
       </Card>
+
       <div v-if="newsItem.text" class="news-text-content">
         <h3>Content:</h3>
         <div class="text-content" v-html="newsItem.text"></div>
+      </div>
+
+      <!-- Секция комментариев -->
+      <div class="comments-section">
+        <div class="comments-header">
+          <h3 class="comments-title">
+            <i class="pi pi-comments"></i>
+            Comments ({{ comments?.length || null }})
+          </h3>
+          <Button
+            label="Refresh"
+            icon="pi pi-refresh"
+            iconPos="right"
+            @click="refreshComments"
+            class="refresh-btn"
+            :loading="loadingComments"
+            size="small"
+          />
+        </div>
+
+        <div v-if="loadingComments" class="comments-loading">
+          <ProgressSpinner class="spinner-small" />
+          <span>Loading comments...</span>
+        </div>
+
+        <div v-else-if="comments?.length" class="comments-list">
+          <RecursiveComments v-for="comment in comments" :key="comment.id" :comment="comment" />
+        </div>
+
+        <div v-else class="no-comments">
+          <i class="pi pi-comment"></i>
+          <p>No comments yet</p>
+        </div>
       </div>
     </div>
   </main>
@@ -319,6 +432,7 @@ onMounted(() => {
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 .news-text-content h3 {
@@ -343,6 +457,91 @@ onMounted(() => {
 
 .text-content >>> a:hover {
   text-decoration: underline;
+}
+
+/* Стили для секции комментариев */
+.comments-section {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.comments-title {
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comments-title .pi {
+  color: #667eea;
+}
+
+.refresh-btn {
+  background: linear-gradient(45deg, #48bb78, #38a169);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+
+.refresh-btn:hover {
+  background: linear-gradient(45deg, #38a169, #2f855a);
+  transform: translateY(-1px);
+}
+
+.comments-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #718096;
+}
+
+.spinner-small {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 1rem;
+}
+
+.no-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #a0aec0;
+  text-align: center;
+}
+
+.no-comments .pi {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-comments p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* Адаптивность */
@@ -374,6 +573,20 @@ onMounted(() => {
   .news-text-content {
     padding: 1.5rem;
   }
+
+  .comments-section {
+    padding: 1.5rem;
+  }
+
+  .comments-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .comments-title {
+    font-size: 1.3rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -391,6 +604,158 @@ onMounted(() => {
   .id-badge {
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
+  }
+
+  .comments-section {
+    padding: 1rem;
+  }
+}
+</style>
+
+<style>
+/* Глобальные стили для комментариев */
+.comment-item {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.comment-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  border-color: #cbd5e0;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.comment-author {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1rem;
+}
+
+.comment-time {
+  color: #718096;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.comment-text {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.comment-text >>> p {
+  margin-bottom: 0.75rem;
+}
+
+.comment-text >>> a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.comment-text >>> a:hover {
+  text-decoration: underline;
+}
+
+.comment-text >>> code {
+  background: #e2e8f0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.comment-text >>> pre {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.comment-text >>> pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.comment-replies {
+  margin-left: 2rem;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  border-left: 3px solid #667eea;
+  border-radius: 2px;
+}
+
+/* Индикатор вложенности */
+.comment-level-1 {
+  margin-left: 0;
+}
+.comment-level-2 {
+  margin-left: 2rem;
+}
+.comment-level-3 {
+  margin-left: 4rem;
+}
+.comment-level-4 {
+  margin-left: 6rem;
+}
+.comment-level-5 {
+  margin-left: 8rem;
+}
+
+/* Для очень глубоких веток */
+.comment-level-6-plus {
+  margin-left: 10rem;
+}
+
+/* Анимация появления комментариев */
+.comment-enter-active {
+  transition: all 0.3s ease;
+}
+
+.comment-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Темная тема поддержка */
+@media (prefers-color-scheme: dark) {
+  .comment-item {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-color: #4a5568;
+  }
+
+  .comment-header {
+    border-color: #4a5568;
+  }
+
+  .comment-author {
+    color: #e2e8f0;
+  }
+
+  .comment-text {
+    color: #cbd5e0;
+  }
+
+  .comment-text >>> code {
+    background: #4a5568;
+    color: #e2e8f0;
   }
 }
 </style>
