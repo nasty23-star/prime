@@ -7,5 +7,5 @@
   block-size: 100dvh;
 }
 body {
-  background: #a2f8fa;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
 }

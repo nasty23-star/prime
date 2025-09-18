@@ -4,6 +4,7 @@ import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { dateFormatter } from '../utils/dateFHelper.ts'
 
 const router = useRouter()
 
@@ -43,16 +44,6 @@ const getData = async (url: RequestInfo | URL) => {
   } finally {
     loading.value = false
   }
-}
-
-const formatDate = (timestamp: number) => {
-  return new Date(timestamp * 1000).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 const toItemNews = (itemId: number) => {
@@ -109,7 +100,6 @@ onMounted(() => {
         <template #header>
           <div class="card-header">
             <i class="pi pi-bolt header-icon"></i>
-            <span class="score-badge">{{ card.score }} points</span>
           </div>
         </template>
 
@@ -139,7 +129,7 @@ onMounted(() => {
         <template #footer>
           <div class="card-footer">
             <i class="pi pi-calendar footer-icon"></i>
-            <span class="date-text">{{ formatDate(card.time) }}</span>
+            <span class="date-text">{{ dateFormatter(card.time) }}</span>
           </div>
         </template>
       </Card>
@@ -267,6 +257,7 @@ onMounted(() => {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  height: 100px;
 }
 
 .visited {
