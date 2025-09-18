@@ -20,6 +20,7 @@ interface NewsItem {
 const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
 const dataCards = ref<NewsItem[]>([])
 const loading = ref(false)
+const visitedCards = ref<number[]>([])
 
 const getData = async (url: RequestInfo | URL) => {
   try {
@@ -55,6 +56,10 @@ const formatDate = (timestamp: number) => {
 }
 
 const toItemNews = (itemId: number) => {
+  if (!visitedCards.value.includes(itemId)) {
+    visitedCards.value.push(itemId)
+  }
+  localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
   router.push({
     name: 'news-item',
     params: { id: itemId.toString() },
@@ -65,7 +70,13 @@ const updateData = () => {
   getData(url)
 }
 
-onMounted(() => getData(url))
+onMounted(() => {
+  const fromStorage = localStorage.getItem('visitedCards')
+  if (fromStorage) {
+    visitedCards.value = JSON.parse(fromStorage)
+  }
+  getData(url)
+})
 </script>
 
 <template>
@@ -88,7 +99,13 @@ onMounted(() => getData(url))
     </div>
 
     <div v-else-if="dataCards.length > 0" class="news-grid">
-      <Card v-for="card in dataCards" :key="card.id" class="news-card" @click="toItemNews(card.id)">
+      <Card
+        v-for="card in dataCards"
+        :key="card.id"
+        class="news-card"
+        :class="{ visited: visitedCards.includes(card.id) }"
+        @click="toItemNews(card.id)"
+      >
         <template #header>
           <div class="card-header">
             <i class="pi pi-bolt header-icon"></i>
@@ -250,6 +267,10 @@ onMounted(() => getData(url))
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.visited {
+  opacity: 0.7;
 }
 
 .card-content {
