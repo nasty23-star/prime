@@ -100,7 +100,6 @@ onMounted(() => {
         <template #header>
           <div class="card-header">
             <i class="pi pi-bolt header-icon"></i>
-            <span class="score-badge">{{ card.score }} points</span>
           </div>
         </template>
 
