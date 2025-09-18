@@ -213,45 +213,44 @@ onMounted(async () => {
         <h3>Content:</h3>
         <div class="text-content" v-html="newsItem.text"></div>
       </div>
-
-      <div class="comments-section">
-        <div class="comments-header">
-          <h3 class="comments-title">
-            <i class="pi pi-comments"></i>
-            Comments ({{ comments?.length || 0 }})
-          </h3>
-          <Button
-            label="Refresh"
-            icon="pi pi-refresh"
-            iconPos="right"
-            @click="refreshComments"
-            class="refresh-btn"
-            :loading="loadingComments"
-            size="small"
-          />
-        </div>
-
-        <div v-if="loadingComments" class="comments-loading">
-          <ProgressSpinner class="spinner-small" />
-          <span>Loading comments...</span>
-        </div>
-
-        <div v-else-if="comments.length" class="comments-list">
-          <RecursiveComments
-            v-for="comment in comments"
-            :key="comment.id"
-            :comment="comment"
-            :fetch-replies="fetchCommentReplies"
-          />
-        </div>
-
-        <div v-else class="no-comments">
-          <i class="pi pi-comment"></i>
-          <p>No comments yet</p>
-        </div>
-      </div>
     </div>
   </main>
+  <div class="comments-section">
+    <div class="comments-header">
+      <h3 class="comments-title">
+        <i class="pi pi-comments"></i>
+        Comments ({{ comments?.length || 0 }})
+      </h3>
+      <Button
+        label="Refresh"
+        icon="pi pi-refresh"
+        iconPos="right"
+        @click="refreshComments"
+        class="refresh-btn"
+        :loading="loadingComments"
+        size="small"
+      />
+    </div>
+
+    <div v-if="loadingComments" class="comments-loading">
+      <ProgressSpinner class="spinner-small" />
+      <span>Loading comments...</span>
+    </div>
+
+    <div v-else-if="comments.length" class="comments-list">
+      <RecursiveComments
+        v-for="comment in comments"
+        :key="comment.id"
+        :comment="comment"
+        :fetch-replies="fetchCommentReplies"
+      />
+    </div>
+
+    <div v-else class="no-comments">
+      <i class="pi pi-comment"></i>
+      <p>No comments yet</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -468,10 +467,12 @@ onMounted(async () => {
 
 /* Стили для секции комментариев */
 .comments-section {
+  max-width: 800px;
   background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
 }
 
 .comments-header {
