@@ -29,7 +29,7 @@ const getData = async (url: RequestInfo | URL) => {
     const json = await response.json()
 
     const promises = json
-      .slice(0, 10)
+      .slice(0, 100)
       .map((id: number) =>
         fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
           response.json(),
