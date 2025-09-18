@@ -48,7 +48,7 @@ const loadReplies = async () => {
       isLoading.value = false
     }
   }
-  
+
   showReplies.value = !showReplies.value
 }
 </script>
