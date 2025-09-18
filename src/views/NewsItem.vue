@@ -195,15 +195,7 @@ onMounted(async () => {
           <div class="card-footer">
             <i class="pi pi-calendar footer-icon"></i>
             <span class="date-text">
-              {{
-                new Date(newsItem.time * 1000).toLocaleDateString('ru-RU', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })
-              }}
+              {{ newsItem.time }}
             </span>
           </div>
         </template>
