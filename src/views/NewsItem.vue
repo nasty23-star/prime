@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
+import RecursiveComments from '@/components/RecursiveComments.vue'
 
 interface NewsItem {
   id: number
@@ -14,19 +15,103 @@ interface NewsItem {
   url?: string
   text?: string
   deleted?: boolean
+  descendants?: number
+  kids?: number[]
+}
+
+interface NHComment {
+  id: number
+  by?: string
+  text?: string
+  time?: number
+  type: string
+  kids?: number[]
+  deleted?: boolean
+  dead?: boolean
+  replies?: NHComment[]
 }
 
 const newsItem = ref<NewsItem | null>(null)
 const route = useRoute()
 const router = useRouter()
 const itemId = route.params.id
+const loadingComments = ref(false)
+const loadingNews = ref(false)
+const comments = ref<NHComment[]>([])
+
+const commentsCount = computed(() => {
+  return newsItem.value?.descendants ?? 0
+})
 
 const fetchNewsItem = async () => {
+  loadingNews.value = true
   try {
     const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${itemId}.json`)
     newsItem.value = await response.json()
   } catch (error) {
     console.error('Error fetching news item:', error)
+  } finally {
+    loadingNews.value = false
+  }
+}
+
+const fetchRootComments = async (commentIds: number[]) => {
+  loadingComments.value = true
+  try {
+    const commentPromises = commentIds.map((id) =>
+      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
+        response.json(),
+      ),
+    )
+    const commentsData = await Promise.all(commentPromises)
+
+    comments.value = commentsData
+      .filter((comment) => !comment.dead && !comment.deleted)
+      .map((comment) => ({
+        id: comment.id,
+        by: comment.by,
+        text: comment.text,
+        time: comment.time,
+        type: comment.type,
+        kids: comment.kids,
+        replies: [],
+      }))
+  } catch (error) {
+    console.error('Error fetching root comments:', error)
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+const fetchCommentReplies = async (commentId: number, kidsIds: number[]) => {
+  try {
+    const replyPromises = kidsIds.map((id) =>
+      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
+        response.json(),
+      ),
+    )
+    const repliesData = await Promise.all(replyPromises)
+
+    return repliesData
+      .filter((reply) => !reply.dead && !reply.deleted)
+      .map((reply) => ({
+        id: reply.id,
+        by: reply.by,
+        text: reply.text,
+        time: reply.time,
+        type: reply.type,
+        kids: reply.kids,
+        replies: [],
+      }))
+  } catch (error) {
+    console.error('Error fetching comment replies:', error)
+    return []
+  }
+}
+
+const refreshComments = async () => {
+  if (newsItem.value?.kids) {
+    await fetchRootComments(newsItem.value.kids)
   }
 }
 
@@ -34,8 +119,11 @@ const backToMain = () => {
   router.push('/')
 }
 
-onMounted(() => {
-  fetchNewsItem()
+onMounted(async () => {
+  await fetchNewsItem()
+  if (newsItem.value?.kids && newsItem.value.kids.length > 0) {
+    await fetchRootComments(newsItem.value.kids)
+  }
 })
 </script>
 
@@ -50,17 +138,17 @@ onMounted(() => {
       class="back-btn"
     />
 
-    <div v-if="!newsItem" class="loading-container">
+    <div v-if="loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading news item...</p>
     </div>
 
     <div v-else-if="newsItem?.deleted" class="empty-state">
       <i class="pi pi-inbox empty-icon"></i>
-      <p class="empty-text">Новости нет</p>
+      <p class="empty-text">News not found</p>
     </div>
 
-    <div v-else class="news-detail">
+    <div v-else-if="newsItem" class="news-detail">
       <Card class="detail-card">
         <template #header>
           <div class="card-header">
@@ -89,12 +177,17 @@ onMounted(() => {
               <span class="info-label">Author:</span>
               <span class="info-value">{{ newsItem.by }}</span>
             </div>
-
             <div v-if="newsItem.url" class="info-item">
               <i class="pi pi-link info-icon"></i>
               <span class="info-label">URL:</span>
               <a :href="newsItem.url" target="_blank" class="news-url">{{ newsItem.url }}</a>
             </div>
+          </div>
+
+          <div class="info-item">
+            <i class="pi pi-comments info-icon"></i>
+            <span class="info-label">Comments count:</span>
+            <span class="info-value">{{ commentsCount }}</span>
           </div>
         </template>
 
@@ -122,6 +215,42 @@ onMounted(() => {
       </div>
     </div>
   </main>
+  <div class="comments-section">
+    <div class="comments-header">
+      <h3 class="comments-title">
+        <i class="pi pi-comments"></i>
+        Comments ({{ comments?.length || 0 }})
+      </h3>
+      <Button
+        label="Refresh"
+        icon="pi pi-refresh"
+        iconPos="right"
+        @click="refreshComments"
+        class="refresh-btn"
+        :loading="loadingComments"
+        size="small"
+      />
+    </div>
+
+    <div v-if="loadingComments" class="comments-loading">
+      <ProgressSpinner class="spinner-small" />
+      <span>Loading comments...</span>
+    </div>
+
+    <div v-else-if="comments.length" class="comments-list">
+      <RecursiveComments
+        v-for="comment in comments"
+        :key="comment.id"
+        :comment="comment"
+        :fetch-replies="fetchCommentReplies"
+      />
+    </div>
+
+    <div v-else class="no-comments">
+      <i class="pi pi-comment"></i>
+      <p>No comments yet</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -309,6 +438,7 @@ onMounted(() => {
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 .news-text-content h3 {
@@ -335,52 +465,50 @@ onMounted(() => {
   text-decoration: underline;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .main-container {
-    padding: 15px;
-  }
-
-  .news-detail {
-    max-width: 100%;
-  }
-
-  .news-title {
-    font-size: 1.3rem;
-  }
-
-  .card-header {
-    padding: 1rem 1rem 0;
-  }
-
-  .title-container {
-    padding: 0 1rem;
-  }
-
-  .card-content {
-    padding: 0.5rem 1rem;
-  }
-
-  .news-text-content {
-    padding: 1.5rem;
-  }
+/* Стили для секции комментариев */
+.comments-section {
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
 }
 
-@media (max-width: 480px) {
-  .back-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
 
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
+.comments-title {
+  color: #333;
+  margin: 0;
+}
 
-  .id-badge {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
+.comments-loading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  justify-content: center;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 2rem;
+  color: #757575;
+}
+
+.no-comments i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
 }
 </style>
