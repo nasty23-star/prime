@@ -16,7 +16,7 @@ import { RouterView } from 'vue-router'
 
 header {
   width: auto;
-  background: #3732b3;
+  background: linear-gradient(135deg, #72beca 0%, #366ea6 100%);
   height: 90px;
   font-size: 24px;
   font-weight: 600;
