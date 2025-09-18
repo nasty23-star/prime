@@ -257,6 +257,7 @@ onMounted(() => {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  height: 100px;
 }
 
 .visited {
