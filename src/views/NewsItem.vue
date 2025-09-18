@@ -55,7 +55,6 @@ const fetchNewsItem = async () => {
   }
 }
 
-// Загрузка только корневых комментариев
 const fetchRootComments = async (commentIds: number[]) => {
   loadingComments.value = true
   try {
@@ -84,7 +83,6 @@ const fetchRootComments = async (commentIds: number[]) => {
   }
 }
 
-// Загрузка ответов для конкретного комментария
 const fetchCommentReplies = async (commentId: number, kidsIds: number[]) => {
   try {
     const replyPromises = kidsIds.map((id) =>
@@ -480,291 +478,36 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
 }
 
 .comments-title {
-  color: #2d3748;
-  font-size: 1.5rem;
-  font-weight: 700;
+  color: #333;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.comments-title .pi {
-  color: #667eea;
-}
-
-.refresh-btn {
-  background: linear-gradient(45deg, #48bb78, #38a169);
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-}
-
-.refresh-btn:hover {
-  background: linear-gradient(45deg, #38a169, #2f855a);
-  transform: translateY(-1px);
 }
 
 .comments-loading {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 1rem;
+  padding: 2rem;
   justify-content: center;
-  padding: 3rem;
-  color: #718096;
 }
 
 .spinner-small {
-  width: 30px;
-  height: 30px;
-  margin-bottom: 1rem;
+  width: 24px;
+  height: 24px;
 }
 
 .no-comments {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  color: #a0aec0;
   text-align: center;
+  padding: 2rem;
+  color: #757575;
 }
 
-.no-comments .pi {
-  font-size: 3rem;
+.no-comments i {
+  font-size: 2rem;
   margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.no-comments p {
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-.comments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .main-container {
-    padding: 15px;
-  }
-
-  .news-detail {
-    max-width: 100%;
-  }
-
-  .news-title {
-    font-size: 1.3rem;
-  }
-
-  .card-header {
-    padding: 1rem 1rem 0;
-  }
-
-  .title-container {
-    padding: 0 1rem;
-  }
-
-  .card-content {
-    padding: 0.5rem 1rem;
-  }
-
-  .news-text-content {
-    padding: 1.5rem;
-  }
-
-  .comments-section {
-    padding: 1.5rem;
-  }
-
-  .comments-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-
-  .comments-title {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .back-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
-
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .id-badge {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .comments-section {
-    padding: 1rem;
-  }
-}
-</style>
-
-<style>
-/* Глобальные стили для комментариев */
-.comment-item {
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.comment-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-  border-color: #cbd5e0;
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.comment-author {
-  font-weight: 700;
-  color: #2d3748;
-  font-size: 1rem;
-}
-
-.comment-time {
-  color: #718096;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.comment-text {
-  color: #4a5568;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.comment-text >>> p {
-  margin-bottom: 0.75rem;
-}
-
-.comment-text >>> a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.comment-text >>> a:hover {
-  text-decoration: underline;
-}
-
-.comment-text >>> code {
-  background: #e2e8f0;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.9em;
-}
-
-.comment-text >>> pre {
-  background: #2d3748;
-  color: #e2e8f0;
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-
-.comment-text >>> pre code {
-  background: none;
-  padding: 0;
-  color: inherit;
-}
-
-.comment-replies {
-  margin-left: 2rem;
-  margin-top: 1rem;
-  padding-left: 1rem;
-  border-left: 3px solid #667eea;
-  border-radius: 2px;
-}
-
-/* Индикатор вложенности */
-.comment-level-1 {
-  margin-left: 0;
-}
-.comment-level-2 {
-  margin-left: 2rem;
-}
-.comment-level-3 {
-  margin-left: 4rem;
-}
-.comment-level-4 {
-  margin-left: 6rem;
-}
-.comment-level-5 {
-  margin-left: 8rem;
-}
-
-/* Для очень глубоких веток */
-.comment-level-6-plus {
-  margin-left: 10rem;
-}
-
-/* Анимация появления комментариев */
-.comment-enter-active {
-  transition: all 0.3s ease;
-}
-
-.comment-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-/* Темная тема поддержка */
-@media (prefers-color-scheme: dark) {
-  .comment-item {
-    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-    border-color: #4a5568;
-  }
-
-  .comment-header {
-    border-color: #4a5568;
-  }
-
-  .comment-author {
-    color: #e2e8f0;
-  }
-
-  .comment-text {
-    color: #cbd5e0;
-  }
-
-  .comment-text >>> code {
-    background: #4a5568;
-    color: #e2e8f0;
-  }
+  display: block;
 }
 </style>

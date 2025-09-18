@@ -27,16 +27,18 @@ const formatTime = (timestamp?: number) => {
 }
 
 const loadReplies = async () => {
-  if (!props.fetchReplies || !props.comment.kids || hasLoadedReplies.value) {
+  if (!props.fetchReplies || !props.comment.kids) {
     showReplies.value = !showReplies.value
     return
   }
 
-  if (!props.comment.replies || props.comment.replies.length === 0) {
+  // Если replies еще не загружены, загружаем их
+  if (!hasLoadedReplies.value) {
     isLoading.value = true
     try {
       const replies = await props.fetchReplies(props.comment.id, props.comment.kids)
       if (replies.length > 0) {
+        // Создаем новый объект комментария с replies
         props.comment.replies = replies
         hasLoadedReplies.value = true
       }
@@ -46,7 +48,7 @@ const loadReplies = async () => {
       isLoading.value = false
     }
   }
-
+  
   showReplies.value = !showReplies.value
 }
 </script>
@@ -87,6 +89,7 @@ const loadReplies = async () => {
   padding: 1rem;
   margin: 0.5rem 0;
   background: #fafafa;
+  border-radius: 4px;
 }
 
 .comment-header {
@@ -99,17 +102,37 @@ const loadReplies = async () => {
 
 .comment-author {
   font-weight: bold;
+  color: #1976d2;
+}
+
+.comment-time {
+  color: #757575;
 }
 
 .comment-text {
   margin-bottom: 1rem;
   line-height: 1.5;
+  color: #333;
+}
+
+.comment-text :deep(*) {
+  margin: 0.5rem 0;
+}
+
+.comment-text :deep(a) {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.comment-text :deep(a:hover) {
+  text-decoration: underline;
 }
 
 .replies {
   margin-left: 2rem;
   margin-top: 1rem;
   border-left: 2px solid #ddd;
+  padding-left: 1rem;
 }
 
 .reply-btn {
