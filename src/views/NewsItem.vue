@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import RecursiveComments from '@/components/RecursiveComments.vue'
+import { dateFormatter } from '@/utils/dateFHelper'
 
 interface NewsItem {
   id: number
@@ -195,7 +196,7 @@ onMounted(async () => {
           <div class="card-footer">
             <i class="pi pi-calendar footer-icon"></i>
             <span class="date-text">
-              {{ newsItem.time }}
+              {{ dateFormatter(newsItem.time) }}
             </span>
           </div>
         </template>
