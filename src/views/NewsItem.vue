@@ -116,10 +116,6 @@ const refreshComments = async () => {
   }
 }
 
-const backToMain = () => {
-  router.push('/')
-}
-
 onMounted(async () => {
   await fetchNewsItem()
   if (newsItem.value?.kids && newsItem.value.kids.length > 0) {
@@ -130,15 +126,15 @@ onMounted(async () => {
 
 <template>
   <main class="main-container">
-    <Button
-      label="Back"
-      icon="pi pi-home"
-      iconPos="right"
-      size="large"
-      @click="backToMain"
-      class="back-btn"
-    />
-
+    <router-link to="/">
+      <Button
+        label="Back"
+        icon="pi pi-home"
+        iconPos="right"
+        size="large"
+        class="back-btn"
+      />
+    </router-link>
     <div v-if="loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading news item...</p>
@@ -161,7 +157,9 @@ onMounted(async () => {
         <template #title>
           <div class="title-container">
             <span class="title-label">News Title:</span>
-            <h1 class="news-title">{{ newsItem.title }}</h1>
+            <h1 class="news-title">
+              {{ newsItem.title }}
+            </h1>
           </div>
         </template>
 
