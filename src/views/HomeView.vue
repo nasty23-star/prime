@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { dateFormatter } from '../utils/dateFHelper.ts'
+import { dateFormatter } from '../utils/dateHelper.ts'
 
 const router = useRouter()
 

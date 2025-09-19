@@ -5,7 +5,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import RecursiveComments from '@/components/RecursiveComments.vue'
-import { dateFormatter } from '@/utils/dateFHelper'
+import { dateFormatter } from '@/utils/dateHelper'
 
 interface NewsItem {
   id: number
