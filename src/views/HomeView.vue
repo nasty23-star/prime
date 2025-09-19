@@ -32,7 +32,8 @@ const getData = async (url: RequestInfo | URL) => {
     const promises = json
       .slice(0, 100)
       .map((id: number) =>
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
+        .then((response) =>
           response.json(),
         ),
       )
@@ -46,15 +47,11 @@ const getData = async (url: RequestInfo | URL) => {
   }
 }
 
-const toItemNews = (itemId: number) => {
+const markAsVisited = (itemId: number) => {
   if (!visitedCards.value.includes(itemId)) {
     visitedCards.value.push(itemId)
   }
   localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
-  router.push({
-    name: 'news-item',
-    params: { id: itemId.toString() },
-  })
 }
 
 const updateData = () => {
@@ -88,51 +85,68 @@ onMounted(() => {
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading latest news...</p>
     </div>
-
     <div v-else-if="dataCards.length > 0" class="news-grid">
-      <Card
+      <router-link
         v-for="card in dataCards"
         :key="card.id"
-        class="news-card"
-        :class="{ visited: visitedCards.includes(card.id) }"
-        @click="toItemNews(card.id)"
+        :to="`/news/${card.id}`"
+        custom
+        v-slot="{ navigate }"
       >
-        <template #header>
-          <div class="card-header">
-            <i class="pi pi-bolt header-icon"></i>
-          </div>
-        </template>
-
-        <template #title>
-          <div class="title-container">
-            <span class="title-label">News Title:</span>
-            <h3 class="news-title">{{ card.title }}</h3>
-          </div>
-        </template>
-
-        <template #content>
-          <div class="card-content">
-            <div class="info-item">
-              <i class="pi pi-star info-icon"></i>
-              <span class="info-label">Rating:</span>
-              <span class="info-value">{{ card.score }}</span>
+        <Card
+          class="news-card"
+          :class="{
+            visited: visitedCards.includes(card.id),
+          }"
+          @click="
+            (e: MouseEvent | undefined) => {
+              markAsVisited(card.id)
+              navigate(e)
+            }
+          "
+          :pt="{
+            root: { style: 'cursor: pointer;' },
+          }"
+        >
+          <template #header>
+            <div class="card-header">
+              <i class="pi pi-bolt header-icon"></i>
             </div>
+          </template>
 
-            <div class="info-item">
-              <i class="pi pi-user info-icon"></i>
-              <span class="info-label">Author:</span>
-              <span class="info-value">{{ card.by }}</span>
+          <template #title>
+            <div class="title-container">
+              <span class="title-label">News Title:</span>
+              <h3 class="news-title">
+                {{ card.title }}
+              </h3>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <template #footer>
-          <div class="card-footer">
-            <i class="pi pi-calendar footer-icon"></i>
-            <span class="date-text">{{ dateFormatter(card.time) }}</span>
-          </div>
-        </template>
-      </Card>
+          <template #content>
+            <div class="card-content">
+              <div class="info-item">
+                <i class="pi pi-star info-icon"></i>
+                <span class="info-label">Rating:</span>
+                <span class="info-value">{{ card.score }}</span>
+              </div>
+
+              <div class="info-item">
+                <i class="pi pi-user info-icon"></i>
+                <span class="info-label">Author:</span>
+                <span class="info-value">{{ card.by }}</span>
+              </div>
+            </div>
+          </template>
+
+          <template #footer>
+            <div class="card-footer">
+              <i class="pi pi-calendar footer-icon"></i>
+              <span class="date-text">{{ dateFormatter(card.time) }}</span>
+            </div>
+          </template>
+        </Card>
+      </router-link>
     </div>
 
     <div v-else class="empty-state">

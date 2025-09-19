@@ -116,7 +116,6 @@ const refreshComments = async () => {
   }
 }
 
-
 onMounted(async () => {
   await fetchNewsItem()
   if (newsItem.value?.kids && newsItem.value.kids.length > 0) {
@@ -158,7 +157,9 @@ onMounted(async () => {
         <template #title>
           <div class="title-container">
             <span class="title-label">News Title:</span>
-            <h1 class="news-title">{{ newsItem.title }}</h1>
+            <h1 class="news-title">
+              {{ newsItem.title }}
+            </h1>
           </div>
         </template>
 
