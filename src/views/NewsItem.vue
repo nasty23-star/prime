@@ -175,7 +175,7 @@ onMounted(async () => {
       </div>
     </div>
   </main>
-  <div class="comments-section">
+  <div v-if="!loadingNews" class="comments-section">
     <div class="comments-header">
       <h3 class="comments-title">
         <i class="pi pi-comments"></i>
