@@ -10,7 +10,6 @@ import type { NewsItem, NHComment } from '../types/common'
 
 const newsItem = ref<NewsItem | null>(null)
 const route = useRoute()
-const router = useRouter()
 const itemId = route.params.id
 const loadingComments = ref(false)
 const loadingNews = ref(false)
