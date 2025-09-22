@@ -3,20 +3,8 @@ import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { dateFormatter } from '../utils/dateHelper.ts'
-
-const router = useRouter()
-
-interface NewsItem {
-  id: number
-  by: string
-  title: string
-  score: number
-  time: number
-  url?: string
-  text?: string
-}
+import type { NewsItem } from '@/types/common.ts'
 
 const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
 const dataCards = ref<NewsItem[]>([])
@@ -32,8 +20,7 @@ const getData = async (url: RequestInfo | URL) => {
     const promises = json
       .slice(0, 100)
       .map((id: number) =>
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
-        .then((response) =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
           response.json(),
         ),
       )
