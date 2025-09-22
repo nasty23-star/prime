@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import { ref } from 'vue'
-
-interface HNComment {
-  id: number
-  by?: string
-  text?: string
-  time?: number
-  type: string
-  kids?: number[]
-  replies?: HNComment[]
-}
+import type { NHComment } from '@/types/common'
 
 const props = defineProps<{
-  comment: HNComment
-  fetchReplies?: (commentId: number, kidsIds: number[]) => Promise<HNComment[]>
+  comment: NHComment
+  fetchReplies?: (commentId: number, kidsIds: number[]) => Promise<NHComment[]>
 }>()
 
 const isLoading = ref(false)

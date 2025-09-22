@@ -6,31 +6,7 @@ import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import RecursiveComments from '@/components/RecursiveComments.vue'
 import { dateFormatter } from '@/utils/dateHelper'
-
-interface NewsItem {
-  id: number
-  by: string
-  title: string
-  score: number
-  time: number
-  url?: string
-  text?: string
-  deleted?: boolean
-  descendants?: number
-  kids?: number[]
-}
-
-interface NHComment {
-  id: number
-  by?: string
-  text?: string
-  time?: number
-  type: string
-  kids?: number[]
-  deleted?: boolean
-  dead?: boolean
-  replies?: NHComment[]
-}
+import type { NewsItem, NHComment } from '../types/common'
 
 const newsItem = ref<NewsItem | null>(null)
 const route = useRoute()
@@ -127,13 +103,7 @@ onMounted(async () => {
 <template>
   <main class="main-container">
     <router-link to="/">
-      <Button
-        label="Back"
-        icon="pi pi-home"
-        iconPos="right"
-        size="large"
-        class="back-btn"
-      />
+      <Button label="Back" icon="pi pi-home" iconPos="right" size="large" class="back-btn" />
     </router-link>
     <div v-if="loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
