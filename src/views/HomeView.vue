@@ -4,53 +4,12 @@ import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import { ref, onMounted } from 'vue'
 import { dateFormatter } from '../utils/dateHelper.ts'
-import type { NewsItem } from '@/types/common.ts'
+import { useDataStore } from '@/stores/data.ts'
 
-const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
-const dataCards = ref<NewsItem[]>([])
-const loading = ref(false)
-const visitedCards = ref<number[]>([])
-
-const getData = async (url: RequestInfo | URL) => {
-  try {
-    loading.value = true
-    const response = await fetch(url)
-    const json = await response.json()
-
-    const promises = json
-      .slice(0, 100)
-      .map((id: number) =>
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
-          response.json(),
-        ),
-      )
-
-    const result = await Promise.all(promises)
-    dataCards.value = result.filter((item) => item !== null)
-  } catch (error) {
-    console.error('Error fetching data:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-const markAsVisited = (itemId: number) => {
-  if (!visitedCards.value.includes(itemId)) {
-    visitedCards.value.push(itemId)
-  }
-  localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
-}
-
-const updateData = () => {
-  getData(url)
-}
+const dataStore = useDataStore()
 
 onMounted(() => {
-  const fromStorage = localStorage.getItem('visitedCards')
-  if (fromStorage) {
-    visitedCards.value = JSON.parse(fromStorage)
-  }
-  getData(url)
+  dataStore.getData(dataStore.url)
 })
 </script>
 
@@ -62,19 +21,19 @@ onMounted(() => {
         icon="pi pi-refresh"
         iconPos="right"
         size="large"
-        @click="updateData"
-        :loading="loading"
+        @click="dataStore.updateData"
+        :loading="dataStore.loading"
         class="update-btn"
       />
     </header>
 
-    <div v-if="loading" class="loading-container">
+    <div v-if="dataStore.loading" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading latest news...</p>
     </div>
-    <div v-else-if="dataCards.length > 0" class="news-grid">
+    <div v-else-if="dataStore.dataCards.length > 0" class="news-grid">
       <router-link
-        v-for="card in dataCards"
+        v-for="card in dataStore.dataCards"
         :key="card.id"
         :to="`/news/${card.id}`"
         custom
@@ -83,11 +42,11 @@ onMounted(() => {
         <Card
           class="news-card"
           :class="{
-            visited: visitedCards.includes(card.id),
+            visited: dataStore.visitedCards.includes(card.id),
           }"
           @click="
             (e: MouseEvent | undefined) => {
-              markAsVisited(card.id)
+              dataStore.markAsVisited(card.id)
               navigate(e)
             }
           "

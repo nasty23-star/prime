@@ -6,95 +6,17 @@ import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import RecursiveComments from '@/components/RecursiveComments.vue'
 import { dateFormatter } from '@/utils/dateHelper'
-import type { NewsItem, NHComment } from '../types/common'
+import { useNewsStore } from '../stores/news'
 
-const newsItem = ref<NewsItem | null>(null)
+const newsStore = useNewsStore()
 const route = useRoute()
-const itemId = route.params.id
-const loadingComments = ref(false)
-const loadingNews = ref(false)
-const comments = ref<NHComment[]>([])
-
-const commentsCount = computed(() => {
-  return newsItem.value?.descendants ?? 0
-})
-
-const fetchNewsItem = async () => {
-  loadingNews.value = true
-  try {
-    const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${itemId}.json`)
-    newsItem.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching news item:', error)
-  } finally {
-    loadingNews.value = false
-  }
-}
-
-const fetchRootComments = async (commentIds: number[]) => {
-  loadingComments.value = true
-  try {
-    const commentPromises = commentIds.map((id) =>
-      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
-        response.json(),
-      ),
-    )
-    const commentsData = await Promise.all(commentPromises)
-
-    comments.value = commentsData
-      .filter((comment) => !comment.dead && !comment.deleted)
-      .map((comment) => ({
-        id: comment.id,
-        by: comment.by,
-        text: comment.text,
-        time: comment.time,
-        type: comment.type,
-        kids: comment.kids,
-        replies: [],
-      }))
-  } catch (error) {
-    console.error('Error fetching root comments:', error)
-  } finally {
-    loadingComments.value = false
-  }
-}
-
-const fetchCommentReplies = async (commentId: number, kidsIds: number[]) => {
-  try {
-    const replyPromises = kidsIds.map((id) =>
-      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
-        response.json(),
-      ),
-    )
-    const repliesData = await Promise.all(replyPromises)
-
-    return repliesData
-      .filter((reply) => !reply.dead && !reply.deleted)
-      .map((reply) => ({
-        id: reply.id,
-        by: reply.by,
-        text: reply.text,
-        time: reply.time,
-        type: reply.type,
-        kids: reply.kids,
-        replies: [],
-      }))
-  } catch (error) {
-    console.error('Error fetching comment replies:', error)
-    return []
-  }
-}
-
-const refreshComments = async () => {
-  if (newsItem.value?.kids) {
-    await fetchRootComments(newsItem.value.kids)
-  }
-}
 
 onMounted(async () => {
-  await fetchNewsItem()
-  if (newsItem.value?.kids && newsItem.value.kids.length > 0) {
-    await fetchRootComments(newsItem.value.kids)
+  await newsStore.fetchNewsItem(route.params.id)
+  if (newsStore.newsItem) {
+    if (newsStore.newsItem?.kids && newsStore.newsItem.kids.length > 0) {
+      await newsStore.fetchRootComments(newsStore.newsItem.kids)
+    }
   }
 })
 </script>
@@ -104,22 +26,22 @@ onMounted(async () => {
     <router-link to="/">
       <Button label="Back" icon="pi pi-home" iconPos="right" size="large" class="back-btn" />
     </router-link>
-    <div v-if="loadingNews" class="loading-container">
+    <div v-if="newsStore.loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading news item...</p>
     </div>
 
-    <div v-else-if="newsItem?.deleted" class="empty-state">
+    <div v-else-if="newsStore.newsItem?.deleted" class="empty-state">
       <i class="pi pi-inbox empty-icon"></i>
       <p class="empty-text">News not found</p>
     </div>
 
-    <div v-else-if="newsItem" class="news-detail">
+    <div v-else-if="newsStore.newsItem" class="news-detail">
       <Card class="detail-card">
         <template #header>
           <div class="card-header">
             <i class="pi pi-hashtag header-icon"></i>
-            <span class="id-badge">ID: {{ newsItem.id }}</span>
+            <span class="id-badge">ID: {{ newsStore.newsItem.id }}</span>
           </div>
         </template>
 
@@ -127,7 +49,7 @@ onMounted(async () => {
           <div class="title-container">
             <span class="title-label">News Title:</span>
             <h1 class="news-title">
-              {{ newsItem.title }}
+              {{ newsStore.newsItem.title }}
             </h1>
           </div>
         </template>
@@ -137,25 +59,27 @@ onMounted(async () => {
             <div class="info-item">
               <i class="pi pi-star info-icon"></i>
               <span class="info-label">Rating:</span>
-              <span class="info-value">{{ newsItem.score }} points</span>
+              <span class="info-value">{{ newsStore.newsItem.score }} points</span>
             </div>
 
             <div class="info-item">
               <i class="pi pi-user info-icon"></i>
               <span class="info-label">Author:</span>
-              <span class="info-value">{{ newsItem.by }}</span>
+              <span class="info-value">{{ newsStore.newsItem.by }}</span>
             </div>
-            <div v-if="newsItem.url" class="info-item">
+            <div v-if="newsStore.newsItem.url" class="info-item">
               <i class="pi pi-link info-icon"></i>
               <span class="info-label">URL:</span>
-              <a :href="newsItem.url" target="_blank" class="news-url">{{ newsItem.url }}</a>
+              <a :href="newsStore.newsItem.url" target="_blank" class="news-url">{{
+                newsStore.newsItem.url
+              }}</a>
             </div>
           </div>
 
           <div class="info-item">
             <i class="pi pi-comments info-icon"></i>
             <span class="info-label">Comments count:</span>
-            <span class="info-value">{{ commentsCount }}</span>
+            <span class="info-value">{{ newsStore.commentsCount }}</span>
           </div>
         </template>
 
@@ -163,46 +87,46 @@ onMounted(async () => {
           <div class="card-footer">
             <i class="pi pi-calendar footer-icon"></i>
             <span class="date-text">
-              {{ dateFormatter(newsItem.time) }}
+              {{ dateFormatter(newsStore.newsItem.time) }}
             </span>
           </div>
         </template>
       </Card>
 
-      <div v-if="newsItem.text" class="news-text-content">
+      <div v-if="newsStore.newsItem.text" class="news-text-content">
         <h3>Content:</h3>
-        <div class="text-content" v-html="newsItem.text"></div>
+        <div class="text-content" v-html="newsStore.newsItem.text"></div>
       </div>
     </div>
   </main>
-  <div v-if="!loadingNews" class="comments-section">
+  <div v-if="!newsStore.loadingNews" class="comments-section">
     <div class="comments-header">
       <h3 class="comments-title">
         <i class="pi pi-comments"></i>
-        Comments ({{ comments?.length || 0 }})
+        Comments ({{ newsStore.comments?.length || 0 }})
       </h3>
       <Button
         label="Refresh"
         icon="pi pi-refresh"
         iconPos="right"
-        @click="refreshComments"
+        @click="newsStore.refreshComments"
         class="refresh-btn"
-        :loading="loadingComments"
+        :loading="newsStore.loadingComments"
         size="small"
       />
     </div>
 
-    <div v-if="loadingComments" class="comments-loading">
+    <div v-if="newsStore.loadingComments" class="comments-loading">
       <ProgressSpinner class="spinner-small" />
       <span>Loading comments...</span>
     </div>
 
-    <div v-else-if="comments.length" class="comments-list">
+    <div v-else-if="newsStore.comments.length" class="comments-list">
       <RecursiveComments
-        v-for="comment in comments"
+        v-for="comment in newsStore.comments"
         :key="comment.id"
         :comment="comment"
-        :fetch-replies="fetchCommentReplies"
+        :fetch-replies="newsStore.fetchCommentReplies"
       />
     </div>
 
@@ -245,7 +169,6 @@ onMounted(async () => {
 }
 
 .loading-text {
-  color: white;
   font-size: 1.2rem;
   font-weight: 500;
 }
