@@ -169,7 +169,6 @@ onMounted(async () => {
 }
 
 .loading-text {
-  color: white;
   font-size: 1.2rem;
   font-weight: 500;
 }
