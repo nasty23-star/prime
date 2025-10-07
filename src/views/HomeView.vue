@@ -50,9 +50,6 @@ onMounted(() => {
               navigate(e)
             }
           "
-          :pt="{
-            root: { style: 'cursor: pointer;' },
-          }"
         >
           <template #header>
             <div class="card-header">
@@ -116,17 +113,18 @@ onMounted(() => {
 
 .update-btn {
   background: linear-gradient(45deg, #3732b3, #4ecdc4);
-  border: none;
+  border: 1px solid #f1f1f3;
   border-radius: 12px;
   padding: 1rem 2rem;
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  color: #FFFFFF;
 }
 
 .update-btn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border: none;
 }
 
 .loading-container {
