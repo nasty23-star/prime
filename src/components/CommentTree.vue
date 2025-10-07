@@ -64,7 +64,7 @@ const loadReplies = async () => {
 
     <!-- Рекурсивный рендеринг ответов -->
     <div v-if="showReplies && comment.replies && comment.replies.length" class="replies">
-      <RecursiveTree
+      <CommentTree
         v-for="reply in comment.replies"
         :key="reply.id"
         :comment="reply"

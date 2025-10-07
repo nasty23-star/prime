@@ -4,7 +4,7 @@ import { onMounted } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
-import RecursiveTree from '@/components/RecursiveTree.vue'
+import CommentTree from '@/components/CommentTree.vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useNewsStore } from '../stores/news'
 
@@ -122,7 +122,7 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="newsStore.comments.length" class="comments-list">
-      <RecursiveTree
+      <CommentTree
         v-for="comment in newsStore.comments"
         :key="comment.id"
         :comment="comment"
