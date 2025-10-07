@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 import type { NewsItem } from '@/types/common.ts'
 
 export const useDataStore = defineStore('data', () => {
-  const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
   const dataCards = ref<NewsItem[]>([])
   const loading = ref(false)
   const visitedCards = ref<number[]>([])
-  const getData = async (url: RequestInfo | URL) => {
+  const getData = async () => {
+    const url = 'https://hacker-news.firebaseio.com/v0/newstories.json'
     try {
       loading.value = true
       const response = await fetch(url)
@@ -31,7 +31,7 @@ export const useDataStore = defineStore('data', () => {
   }
 
   const updateData = () => {
-    getData(url)
+    getData()
   }
 
   const initVisitedCards = () => {
@@ -51,5 +51,5 @@ export const useDataStore = defineStore('data', () => {
     localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
   }
 
-  return { getData, updateData, loading, url, dataCards, markAsVisited, visitedCards }
+  return { getData, updateData, loading, dataCards, markAsVisited, visitedCards }
 })
