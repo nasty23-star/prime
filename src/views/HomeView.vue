@@ -9,7 +9,7 @@ import { useDataStore } from '@/stores/data.ts'
 const dataStore = useDataStore()
 
 onMounted(() => {
-  dataStore.getData(dataStore.url)
+  dataStore.getData()
 })
 </script>
 
