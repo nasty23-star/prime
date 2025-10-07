@@ -370,14 +370,6 @@ onMounted(async () => {
   margin: 0;
 }
 
-.comments-loading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 2rem;
-  justify-content: center;
-}
-
 .spinner-small {
   width: 24px;
   height: 24px;
