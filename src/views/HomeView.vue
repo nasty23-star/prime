@@ -183,15 +183,6 @@ onMounted(() => {
   color: #667eea;
 }
 
-.score-badge {
-  background: linear-gradient(45deg, #3732b3, #4ecdc4);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
 .title-container {
   padding: 0 1.5rem;
 }
