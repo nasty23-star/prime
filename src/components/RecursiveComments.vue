@@ -120,7 +120,6 @@ const loadReplies = async () => {
 }
 
 .replies {
-  margin-left: 2rem;
   margin-top: 1rem;
   border-left: 2px solid #ddd;
   padding-left: 1rem;
