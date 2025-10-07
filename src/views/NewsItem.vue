@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { onMounted } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'

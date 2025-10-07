@@ -2,7 +2,7 @@
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { dateFormatter } from '../utils/dateHelper.ts'
 import { useDataStore } from '@/stores/data.ts'
 
