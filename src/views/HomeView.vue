@@ -36,20 +36,12 @@ onMounted(() => {
         v-for="card in dataStore.dataCards"
         :key="card.id"
         :to="`/news/${card.id}`"
-        custom
-        v-slot="{ navigate }"
       >
         <Card
           class="news-card"
           :class="{
             visited: dataStore.visitedCards.includes(card.id),
           }"
-          @click="
-            (e: MouseEvent | undefined) => {
-              dataStore.markAsVisited(card.id)
-              navigate(e)
-            }
-          "
         >
           <template #header>
             <div class="card-header">
@@ -207,6 +199,10 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   height: 100px;
+}
+
+a {
+  text-decoration: none;
 }
 
 .visited {
