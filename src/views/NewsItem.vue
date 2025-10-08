@@ -7,13 +7,17 @@ import ProgressSpinner from 'primevue/progressspinner'
 import CommentTree from '@/components/CommentTree.vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useNewsStore } from '../stores/news'
+import { useDataStore } from '@/stores/data'
 
 const newsStore = useNewsStore()
+const dataStore = useDataStore()
 const route = useRoute()
 
 onMounted(async () => {
   await newsStore.fetchNewsItem(route.params.id)
   if (newsStore.newsItem) {
+    dataStore.markAsVisited(newsStore.newsItem.id)
+
     if (newsStore.newsItem?.kids && newsStore.newsItem.kids.length > 0) {
       await newsStore.fetchRootComments(newsStore.newsItem.kids)
     }
