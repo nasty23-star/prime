@@ -28,7 +28,7 @@ const loadReplies = async () => {
   if (!hasLoadedReplies.value) {
     isLoading.value = true
     try {
-      const replies = await newsStore.fetchCommentReplies(props.comment.id, props.comment.kids)
+      const replies = await newsStore.fetchCommentReplies(props.comment.kids)
       if (replies.length > 0) {
         // Создаем новый объект комментария с replies
         localReplies.value = replies

@@ -53,7 +53,7 @@ export const useNewsStore = defineStore('news', () => {
     }
   }
 
-  const fetchCommentReplies = async (commentId: number, kidsIds: number[]) => {
+  const fetchCommentReplies = async (kidsIds: number[]) => {
     try {
       const replyPromises = kidsIds.map((id) =>
         fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
