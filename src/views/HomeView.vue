@@ -111,7 +111,7 @@ onMounted(() => {
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .update-btn:hover {
