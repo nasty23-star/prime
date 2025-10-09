@@ -2,23 +2,24 @@
 import Button from 'primevue/button'
 import { ref } from 'vue'
 import type { NHComment } from '@/types/common'
-
+import { useNewsStore } from '@/stores/news'
 const props = defineProps<{
   comment: NHComment
-  fetchReplies?: (commentId: number, kidsIds: number[]) => Promise<NHComment[]>
 }>()
+
+const newsStore = useNewsStore()
 
 const isLoading = ref(false)
 const showReplies = ref(false)
 const hasLoadedReplies = ref(false)
-
+const localReplies = ref<NHComment[]>([])
 const formatTime = (timestamp?: number) => {
   if (!timestamp) return ''
   return new Date(timestamp * 1000).toLocaleString()
 }
 
 const loadReplies = async () => {
-  if (!props.fetchReplies || !props.comment.kids) {
+  if (!props.comment.kids) {
     showReplies.value = !showReplies.value
     return
   }
@@ -27,10 +28,10 @@ const loadReplies = async () => {
   if (!hasLoadedReplies.value) {
     isLoading.value = true
     try {
-      const replies = await props.fetchReplies(props.comment.id, props.comment.kids)
+      const replies = await newsStore.fetchCommentReplies(props.comment.id, props.comment.kids)
       if (replies.length > 0) {
         // Создаем новый объект комментария с replies
-        props.comment.replies = replies
+        localReplies.value = replies
         hasLoadedReplies.value = true
       }
     } catch (error) {
@@ -68,7 +69,6 @@ const loadReplies = async () => {
         v-for="reply in comment.replies"
         :key="reply.id"
         :comment="reply"
-        :fetch-replies="fetchReplies"
       />
     </div>
   </div>

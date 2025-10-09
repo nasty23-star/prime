@@ -130,7 +130,6 @@ onMounted(async () => {
         v-for="comment in newsStore.comments"
         :key="comment.id"
         :comment="comment"
-        :fetch-replies="newsStore.fetchCommentReplies"
       />
     </div>
 
