@@ -30,10 +30,8 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  const updateData = () => {
-    getData()
-  }
 
+  // Забираем из локал стораджа отмеченные карточки, если они есть
   const initVisitedCards = () => {
     const fromStorage = localStorage.getItem('visitedCards')
     if (fromStorage) {
@@ -44,6 +42,7 @@ export const useDataStore = defineStore('data', () => {
   // Инициализируем сразу при создании стора
   initVisitedCards()
 
+  // Отмечаем карточку, которую посетили
   const markAsVisited = (itemId: number) => {
     if (!visitedCards.value.includes(itemId)) {
       visitedCards.value.push(itemId)
@@ -51,5 +50,5 @@ export const useDataStore = defineStore('data', () => {
     localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
   }
 
-  return { getData, updateData, loading, dataCards, markAsVisited, visitedCards }
+  return { getData, loading, dataCards, markAsVisited, visitedCards }
 })

@@ -21,7 +21,7 @@ onMounted(() => {
         icon="pi pi-refresh"
         iconPos="right"
         size="large"
-        @click="dataStore.updateData"
+        @click="dataStore.getData"
         :loading="dataStore.loading"
         class="update-btn"
       />
