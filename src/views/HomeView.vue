@@ -9,6 +9,9 @@ import { useDataStore } from '@/stores/data.ts'
 const dataStore = useDataStore()
 
 onMounted(() => {
+  if (dataStore.newNewsIds) {
+    dataStore.getNewsIds()
+  }
   dataStore.getData()
 })
 </script>
@@ -21,7 +24,7 @@ onMounted(() => {
         icon="pi pi-refresh"
         iconPos="right"
         size="large"
-        @click="dataStore.updateData"
+        @click="dataStore.getData"
         :loading="dataStore.loading"
         class="update-btn"
       />
@@ -32,11 +35,7 @@ onMounted(() => {
       <p class="loading-text">Loading latest news...</p>
     </div>
     <div v-else-if="dataStore.dataCards.length > 0" class="news-grid">
-      <router-link
-        v-for="card in dataStore.dataCards"
-        :key="card.id"
-        :to="`/news/${card.id}`"
-      >
+      <router-link v-for="card in dataStore.dataCards" :key="card.id" :to="`/news/${card.id}`">
         <Card
           class="news-card"
           :class="{

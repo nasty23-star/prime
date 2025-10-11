@@ -20,5 +20,4 @@ export interface NHComment {
   kids?: number[]
   deleted?: boolean
   dead?: boolean
-  replies?: NHComment[]
 }

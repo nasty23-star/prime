@@ -28,8 +28,8 @@ const loadReplies = async () => {
   if (!hasLoadedReplies.value) {
     isLoading.value = true
     try {
-      const replies = await newsStore.fetchCommentReplies(props.comment.id, props.comment.kids)
-      if (replies.length > 0) {
+      const replies = await newsStore.fetchComments(props.comment.kids)
+      if (replies && replies.length > 0) {
         // Создаем новый объект комментария с replies
         localReplies.value = replies
         hasLoadedReplies.value = true
@@ -64,12 +64,8 @@ const loadReplies = async () => {
     />
 
     <!-- Рекурсивный рендеринг ответов -->
-    <div v-if="showReplies && comment.replies && comment.replies.length" class="replies">
-      <CommentTree
-        v-for="reply in comment.replies"
-        :key="reply.id"
-        :comment="reply"
-      />
+    <div v-if="showReplies && localReplies && localReplies.length" class="replies">
+      <CommentTree v-for="reply in localReplies" :key="reply.id" :comment="reply" />
     </div>
   </div>
 </template>
