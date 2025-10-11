@@ -1,16 +1,11 @@
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { NewsItem, NHComment } from '@/types/common.ts'
+import type { NewsItem } from '@/types/common.ts'
 import { useDataStore } from './data'
 export const useNewsStore = defineStore('news', () => {
   const newsItem = ref<NewsItem | null>(null)
   const loadingComments = ref(false)
   const loadingNews = ref(false)
-  const comments = ref<NHComment[]>([])
-
-  const commentsCount = computed(() => {
-    return newsItem.value?.descendants ?? 0
-  })
 
   const dataStore = useDataStore()
 
@@ -42,17 +37,16 @@ export const useNewsStore = defineStore('news', () => {
     }
   }
 
-  const fetchRootComments = async (commentIds: number[]) => {
-    loadingComments.value = true
+  const fetchComments = async (kidsIds: number[]) => {
     try {
-      const commentPromises = commentIds.map((id) =>
+      const commentsPromises = kidsIds.map((id) =>
         fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
           response.json(),
         ),
       )
-      const commentsData = await Promise.all(commentPromises)
+      const commentsData = await Promise.all(commentsPromises)
 
-      comments.value = commentsData
+      return commentsData
         .filter((comment) => !comment.dead && !comment.deleted)
         .map((comment) => ({
           id: comment.id,
@@ -61,34 +55,6 @@ export const useNewsStore = defineStore('news', () => {
           time: comment.time,
           type: comment.type,
           kids: comment.kids,
-          replies: [],
-        }))
-    } catch (error) {
-      console.error('Error fetching root comments:', error)
-    } finally {
-      loadingComments.value = false
-    }
-  }
-
-  const fetchCommentReplies = async (kidsIds: number[]) => {
-    try {
-      const replyPromises = kidsIds.map((id) =>
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((response) =>
-          response.json(),
-        ),
-      )
-      const repliesData = await Promise.all(replyPromises)
-
-      return repliesData
-        .filter((reply) => !reply.dead && !reply.deleted)
-        .map((reply) => ({
-          id: reply.id,
-          by: reply.by,
-          text: reply.text,
-          time: reply.time,
-          type: reply.type,
-          kids: reply.kids,
-          replies: [],
         }))
     } catch (error) {
       console.error('Error fetching comment replies:', error)
@@ -96,21 +62,12 @@ export const useNewsStore = defineStore('news', () => {
     }
   }
 
-  const refreshComments = async () => {
-    if (newsItem.value?.kids) {
-      await fetchRootComments(newsItem.value.kids)
-    }
-  }
   return {
     getNewsItemFromData,
     newsItem,
-    refreshComments,
     loadingComments,
     loadingNews,
-    fetchCommentReplies,
-    fetchRootComments,
+    fetchComments,
     fetchNewsItem,
-    comments,
-    commentsCount,
   }
 })

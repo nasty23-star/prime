@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
@@ -8,19 +8,27 @@ import CommentTree from '@/components/CommentTree.vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useNewsStore } from '../stores/news'
 import { useDataStore } from '@/stores/data'
+import type { NHComment } from '@/types/common'
 
 const newsStore = useNewsStore()
 const dataStore = useDataStore()
 const route = useRoute()
+const comments = ref<NHComment[]>([])
+const isLoadingComments = ref(false)
 
+const loadComments = async () => {
+  if (newsStore.newsItem?.kids && newsStore.newsItem.kids.length > 0) {
+    isLoadingComments.value = true
+    comments.value = await newsStore.fetchComments(newsStore.newsItem?.kids)
+    isLoadingComments.value = false
+  }
+}
 onMounted(async () => {
   await newsStore.fetchNewsItem(route.params.id)
   if (newsStore.newsItem) {
     dataStore.markAsVisited(newsStore.newsItem.id)
 
-    if (newsStore.newsItem?.kids && newsStore.newsItem.kids.length > 0) {
-      await newsStore.fetchRootComments(newsStore.newsItem.kids)
-    }
+    loadComments()
   }
 })
 </script>
@@ -83,7 +91,7 @@ onMounted(async () => {
           <div class="info-item">
             <i class="pi pi-comments info-icon"></i>
             <span class="info-label">Comments count:</span>
-            <span class="info-value">{{ newsStore.commentsCount }}</span>
+            <span class="info-value">{{ comments.length }}</span>
           </div>
         </template>
 
@@ -107,30 +115,26 @@ onMounted(async () => {
     <div class="comments-header">
       <h3 class="comments-title">
         <i class="pi pi-comments"></i>
-        Comments ({{ newsStore.comments?.length || 0 }})
+        Comments ({{ comments?.length || 0 }})
       </h3>
       <Button
         label="Refresh"
         icon="pi pi-refresh"
         iconPos="right"
-        @click="newsStore.refreshComments"
+        @click="loadComments"
         class="refresh-btn"
-        :loading="newsStore.loadingComments"
+        :loading="isLoadingComments"
         size="small"
       />
     </div>
 
-    <div v-if="newsStore.loadingComments" class="comments-loading">
+    <div v-if="isLoadingComments" class="comments-loading">
       <ProgressSpinner class="spinner-small" />
       <span>Loading comments...</span>
     </div>
 
-    <div v-else-if="newsStore.comments.length" class="comments-list">
-      <CommentTree
-        v-for="comment in newsStore.comments"
-        :key="comment.id"
-        :comment="comment"
-      />
+    <div v-else-if="comments.length" class="comments-list">
+      <CommentTree v-for="comment in comments" :key="comment.id" :comment="comment" />
     </div>
 
     <div v-else class="no-comments">
