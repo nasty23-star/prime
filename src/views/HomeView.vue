@@ -9,6 +9,9 @@ import { useDataStore } from '@/stores/data.ts'
 const dataStore = useDataStore()
 
 onMounted(() => {
+  if (dataStore.newNewsIds) {
+    dataStore.getNewsIds()
+  }
   dataStore.getData()
 })
 </script>
