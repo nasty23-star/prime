@@ -30,7 +30,6 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-
   // Забираем из локал стораджа отмеченные карточки, если они есть
   const initVisitedCards = () => {
     const fromStorage = localStorage.getItem('visitedCards')
