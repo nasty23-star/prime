@@ -47,9 +47,9 @@ const loadReplies = async () => {
 
 <template>
   <div class="comment">
-    <div class="comment-header">
-      <span class="comment-author">{{ comment.by || 'Anonymous' }}</span>
-      <span class="comment-time">{{ formatTime(comment.time) }}</span>
+    <div class="header">
+      <span class="author">{{ comment.by || 'Anonymous' }}</span>
+      <span class="time">{{ formatTime(comment.time) }}</span>
     </div>
 
     <div class="comment-text" v-html="comment.text"></div>
@@ -77,51 +77,51 @@ const loadReplies = async () => {
   margin: 0.5rem 0;
   background: #fafafa;
   border-radius: 4px;
-}
 
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: #666;
-}
+  & .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
 
-.comment-author {
-  font-weight: bold;
-  color: #1976d2;
-}
+    & .author {
+      font-weight: bold;
+      color: #1976d2;
+    }
 
-.comment-time {
-  color: #757575;
-}
+    & .time {
+      color: #757575;
+    }
+  }
 
-.comment-text {
-  margin-bottom: 1rem;
-  line-height: 1.5;
-  color: #333;
-}
+  & .text {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    color: #333;
+  }
 
-.comment-text :deep(*) {
-  margin: 0.5rem 0;
-}
+  .comment-text :deep(*) {
+    margin: 0.5rem 0;
+  }
 
-.comment-text :deep(a) {
-  color: #1976d2;
-  text-decoration: none;
-}
+  .comment-text :deep(a) {
+    color: #1976d2;
+    text-decoration: none;
+  }
 
-.comment-text :deep(a:hover) {
-  text-decoration: underline;
-}
+  .comment-text :deep(a:hover) {
+    text-decoration: underline;
+  }
 
-.replies {
-  margin-top: 1rem;
-  border-left: 2px solid #ddd;
-  padding-left: 1rem;
-}
+  & .replies {
+    margin-top: 1rem;
+    border-left: 2px solid #ddd;
+    padding-left: 1rem;
+  }
 
-.reply-btn {
-  margin-top: 0.5rem;
+  & .reply-btn {
+    margin-top: 0.5rem;
+  }
 }
 </style>
