@@ -44,8 +44,8 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="newsStore.newsItem?.deleted" class="empty-state">
-      <i class="pi pi-inbox empty-icon"></i>
-      <p class="empty-text">News not found</p>
+      <i class="pi pi-inbox icon"></i>
+      <p class="text">News not found</p>
     </div>
 
     <div v-else-if="newsStore.newsItem" class="news-detail">
@@ -186,20 +186,19 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  color: white;
-}
+  color: #3732b3;
 
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.7;
-}
+  & .icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
 
-.empty-text {
-  font-size: 1.2rem;
-  font-weight: 500;
+  & .text {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
 }
-
 .news-detail {
   max-width: 800px;
   margin: 0 auto;
