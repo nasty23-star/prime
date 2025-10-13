@@ -40,7 +40,7 @@ onMounted(async () => {
     </router-link>
     <div v-if="newsStore.loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
-      <p class="loading-text">Loading news item...</p>
+      <p class="text">Loading news item...</p>
     </div>
 
     <div v-else-if="newsStore.newsItem?.deleted" class="empty-state">
@@ -49,18 +49,18 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="newsStore.newsItem" class="news-detail">
-      <Card class="detail-card">
+      <Card class="card">
         <template #header>
           <div class="card-header">
-            <i class="pi pi-hashtag header-icon"></i>
-            <span class="id-badge">ID: {{ newsStore.newsItem.id }}</span>
+            <i class="pi pi-hashtag icon"></i>
+            <span class="badge">ID: {{ newsStore.newsItem.id }}</span>
           </div>
         </template>
 
         <template #title>
           <div class="title-container">
-            <span class="title-label">News Title:</span>
-            <h1 class="news-title">
+            <span class="label">News Title:</span>
+            <h1 class="title">
               {{ newsStore.newsItem.title }}
             </h1>
           </div>
@@ -69,36 +69,36 @@ onMounted(async () => {
         <template #content>
           <div class="card-content">
             <div class="info-item">
-              <i class="pi pi-star info-icon"></i>
-              <span class="info-label">Rating:</span>
-              <span class="info-value">{{ newsStore.newsItem.score }} points</span>
+              <i class="pi pi-star icon"></i>
+              <span class="label">Rating:</span>
+              <span class="value">{{ newsStore.newsItem.score }} points</span>
             </div>
 
             <div class="info-item">
-              <i class="pi pi-user info-icon"></i>
-              <span class="info-label">Author:</span>
-              <span class="info-value">{{ newsStore.newsItem.by }}</span>
+              <i class="pi pi-user icon"></i>
+              <span class="label">Author:</span>
+              <span class="value">{{ newsStore.newsItem.by }}</span>
             </div>
             <div v-if="newsStore.newsItem.url" class="info-item">
-              <i class="pi pi-link info-icon"></i>
-              <span class="info-label">URL:</span>
-              <a :href="newsStore.newsItem.url" target="_blank" class="news-url">{{
+              <i class="pi pi-link icon"></i>
+              <span class="label">URL:</span>
+              <a :href="newsStore.newsItem.url" target="_blank" class="url">{{
                 newsStore.newsItem.url
               }}</a>
             </div>
           </div>
 
           <div class="info-item">
-            <i class="pi pi-comments info-icon"></i>
-            <span class="info-label">Comments count:</span>
-            <span class="info-value">{{ comments.length }}</span>
+            <i class="pi pi-comments icon"></i>
+            <span class="label">Comments count:</span>
+            <span class="value">{{ comments.length }}</span>
           </div>
         </template>
 
         <template #footer>
           <div class="card-footer">
-            <i class="pi pi-calendar footer-icon"></i>
-            <span class="date-text">
+            <i class="pi pi-calendar icon"></i>
+            <span class="date">
               {{ dateFormatter(newsStore.newsItem.time) }}
             </span>
           </div>
@@ -167,17 +167,17 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-}
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 20px;
-}
+  & .spinner {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+  }
 
-.loading-text {
-  font-size: 1.2rem;
-  font-weight: 500;
+  & .text {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
 }
 
 .empty-state {
@@ -199,127 +199,128 @@ onMounted(async () => {
     font-weight: 500;
   }
 }
+
 .news-detail {
   max-width: 800px;
   margin: 0 auto;
 }
 
-.detail-card {
+.card {
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 30px;
-}
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 1.5rem 0;
-}
+  & .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 0;
 
-.header-icon {
-  font-size: 1.5rem;
-  color: #667eea;
-}
+    & .icon {
+      font-size: 1.5rem;
+      color: #667eea;
+    }
 
-.id-badge {
-  background: linear-gradient(45deg, #3732b3, #4ecdc4);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
+    & .badge {
+      background: linear-gradient(45deg, #3732b3, #4ecdc4);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+  }
 
-.title-container {
-  padding: 0 1.5rem;
-}
+  .title-container {
+    padding: 0 1.5rem;
 
-.title-label {
-  display: block;
-  font-size: 0.8rem;
-  color: #666;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+    & .title-label {
+      display: block;
+      font-size: 0.8rem;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-.news-title {
-  color: #2d3748;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.4;
-  margin: 0;
-}
+    & .title {
+      color: #2d3748;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin: 0;
+    }
+  }
 
-.card-content {
-  padding: 1rem 1.5rem;
-}
+  .card-content {
+    padding: 1rem 1.5rem;
 
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  background: rgba(102, 126, 234, 0.08);
-  border-radius: 12px;
-  transition: background-color 0.2s ease;
-}
+    & .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: rgba(102, 126, 234, 0.08);
+      border-radius: 12px;
+      transition: background-color 0.2s ease;
 
-.info-item:hover {
-  background: rgba(102, 126, 234, 0.12);
-}
+      & .icon {
+        color: #667eea;
+        font-size: 1.1rem;
+        min-width: 20px;
+      }
 
-.info-icon {
-  color: #667eea;
-  font-size: 1.1rem;
-  min-width: 20px;
-}
+      & .label {
+        font-weight: 600;
+        color: #4a5568;
+        min-width: 60px;
+      }
 
-.info-label {
-  font-weight: 600;
-  color: #4a5568;
-  min-width: 60px;
-}
+      & .value {
+        color: #2d3748;
+        font-weight: 500;
+      }
 
-.info-value {
-  color: #2d3748;
-  font-weight: 500;
-}
+      & .url {
+        color: #667eea;
+        text-decoration: none;
+        word-break: break-all;
+      }
 
-.news-url {
-  color: #667eea;
-  text-decoration: none;
-  word-break: break-all;
-}
+      & .url:hover {
+        text-decoration: underline;
+      }
+    }
 
-.news-url:hover {
-  text-decoration: underline;
-}
+    .info-item:hover {
+      background: rgba(102, 126, 234, 0.12);
+    }
+  }
 
-.card-footer {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border-top: 1px solid #e2e8f0;
-}
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-top: 1px solid #e2e8f0;
 
-.footer-icon {
-  color: #718096;
-  font-size: 1rem;
-}
+    & .icon {
+      color: #718096;
+      font-size: 1rem;
+    }
 
-.date-text {
-  color: #4a5568;
-  font-size: 0.9rem;
-  font-weight: 500;
+    & .date {
+      color: #4a5568;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
 }
 
 .news-content {
@@ -353,6 +354,7 @@ onMounted(async () => {
     text-decoration: underline;
   }
 }
+
 /* Стили для секции комментариев */
 .comments-section {
   max-width: 800px;
