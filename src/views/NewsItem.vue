@@ -213,6 +213,34 @@ onMounted(async () => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 30px;
 
+  & .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: rgba(102, 126, 234, 0.08);
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+
+    & .icon {
+      color: #667eea;
+      font-size: 1.1rem;
+      min-width: 20px;
+    }
+
+    & .label {
+      font-weight: 600;
+      color: #4a5568;
+      min-width: 60px;
+    }
+
+    & .value {
+      color: #2d3748;
+      font-weight: 500;
+    }
+  }
+
   & .card-header {
     display: flex;
     justify-content: space-between;
