@@ -112,8 +112,8 @@ onMounted(async () => {
     </div>
   </main>
   <div v-if="!newsStore.loadingNews" class="comments-section">
-    <div class="comments-header">
-      <h3 class="comments-title">
+    <div class="header">
+      <h3 class="title">
         <i class="pi pi-comments"></i>
         Comments ({{ comments?.length || 0 }})
       </h3>
@@ -129,7 +129,7 @@ onMounted(async () => {
     </div>
 
     <div v-if="isLoadingComments" class="comments-loading">
-      <ProgressSpinner class="spinner-small" />
+      <ProgressSpinner class="spinner" />
       <span>Loading comments...</span>
     </div>
 
@@ -363,34 +363,37 @@ onMounted(async () => {
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
-}
 
-.comments-header {
+  & .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    & .title {
+      color: #333;
+      margin: 0;
+    }
+  }
+}
+.comments-loading {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+  flex-direction: column;
 
-.comments-title {
-  color: #333;
-  margin: 0;
+  & .spinner {
+    width: 24px;
+    height: 24px;
+  }
 }
-
-.spinner-small {
-  width: 24px;
-  height: 24px;
-}
-
 .no-comments {
   text-align: center;
   padding: 2rem;
   color: #757575;
-}
 
-.no-comments i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  display: block;
+  i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
 }
 </style>
