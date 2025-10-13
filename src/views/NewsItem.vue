@@ -105,9 +105,9 @@ onMounted(async () => {
         </template>
       </Card>
 
-      <div v-if="newsStore.newsItem.text" class="news-text-content">
+      <div v-if="newsStore.newsItem.text" class="news-content">
         <h3>Content:</h3>
-        <div class="text-content" v-html="newsStore.newsItem.text"></div>
+        <div class="text" v-html="newsStore.newsItem.text"></div>
       </div>
     </div>
   </main>
@@ -323,38 +323,37 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-.news-text-content {
+.news-content {
   background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
-}
 
-.news-text-content h3 {
-  color: #2d3748;
-  margin-bottom: 1rem;
-  font-size: 1.3rem;
-}
+  h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
 
-.text-content {
-  line-height: 1.6;
-  color: #4a5568;
-}
+  & .text {
+    line-height: 1.6;
+    color: #4a5568;
+  }
 
-.text-content >>> * {
-  margin-bottom: 1rem;
-}
+  .text :deep() * {
+    margin-bottom: 1rem;
+  }
 
-.text-content >>> a {
-  color: #667eea;
-  text-decoration: none;
-}
+  .text :deep() a {
+    color: #667eea;
+    text-decoration: none;
+  }
 
-.text-content >>> a:hover {
-  text-decoration: underline;
+  .text :deep() a:hover {
+    text-decoration: underline;
+  }
 }
-
 /* Стили для секции комментариев */
 .comments-section {
   max-width: 800px;
@@ -376,6 +375,7 @@ onMounted(async () => {
     }
   }
 }
+
 .comments-loading {
   display: flex;
   flex-direction: column;
