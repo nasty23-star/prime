@@ -3,8 +3,8 @@ import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import { onMounted } from 'vue'
-import { dateFormatter } from '../utils/dateHelper.ts'
-import { useDataStore } from '@/stores/data.ts'
+import { dateFormatter } from '@/utils/dateHelper'
+import { useDataStore } from '@/stores/data'
 
 const dataStore = useDataStore()
 
