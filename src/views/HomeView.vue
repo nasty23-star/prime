@@ -18,7 +18,7 @@ onMounted(() => {
 
 <template>
   <main class="main-container">
-    <header class="header">
+    <div class="button">
       <Button
         label="Update News"
         icon="pi pi-refresh"
@@ -28,7 +28,7 @@ onMounted(() => {
         :loading="dataStore.loading"
         class="update-btn"
       />
-    </header>
+    </div>
 
     <div v-if="dataStore.loading" class="loading-container">
       <ProgressSpinner class="spinner" />
@@ -95,26 +95,26 @@ onMounted(() => {
   min-height: calc(100dvh - 140px);
   padding: 20px;
 
-  .header {
+  & .button {
     display: flex;
     justify-content: center;
     margin-bottom: 30px;
-  }
+    height: 60px;
 
-  .update-btn {
-    background: linear-gradient(45deg, #3732b3, #4ecdc4);
-    border: 1px solid #f1f1f3;
-    border-radius: 12px;
-    padding: 1rem 2rem;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    color: #ffffff;
-  }
+    & .update-btn {
+      background: linear-gradient(45deg, #3732b3, #4ecdc4);
+      border-radius: 12px;
+      padding: 1rem 2rem;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      color: #ffffff;
+    }
 
-  .update-btn:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    border: none;
+    .update-btn:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      border: none;
+    }
   }
 
   .loading-container {
@@ -203,7 +203,7 @@ onMounted(() => {
         padding: 1rem 1.5rem;
 
         & .info-item {
-          display: flex;
+          /* display: flex; */
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
