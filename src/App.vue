@@ -20,7 +20,6 @@ header {
   height: 90px;
   font-size: 24px;
   font-weight: 600;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
   color: white;
   padding: 30px;
   padding-left: 60px;
