@@ -3,9 +3,11 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>Hacker News</header>
-  <div class="container">
-    <router-view></router-view>
+  <div class="wrapper">
+    <header><div class="header">Hacker News</div></header>
+    <div class="container">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -17,12 +19,16 @@ import { RouterView } from 'vue-router'
 header {
   width: auto;
   background: linear-gradient(135deg, #72beca 0%, #366ea6 100%);
-  height: 90px;
+  height: 70px;
   font-size: 24px;
   font-weight: 600;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   color: white;
-  padding: 30px;
   padding-left: 60px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 </style>
