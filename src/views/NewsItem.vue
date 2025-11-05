@@ -6,7 +6,7 @@ import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import CommentTree from '@/components/CommentTree.vue'
 import { dateFormatter } from '@/utils/dateHelper'
-import { useNewsStore } from '../stores/news'
+import { useNewsStore } from '@/stores/news'
 import { useDataStore } from '@/stores/data'
 import type { NHComment } from '@/types/common'
 
