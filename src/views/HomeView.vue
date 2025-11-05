@@ -203,7 +203,6 @@ onMounted(() => {
         padding: 1rem 1.5rem;
 
         & .info-item {
-          /* display: flex; */
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
