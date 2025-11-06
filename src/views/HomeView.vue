@@ -143,6 +143,7 @@ onMounted(() => {
     gap: 25px;
     max-width: 1200px;
     margin: 0 auto;
+    justify-items: center;
 
     & a {
       text-decoration: none;
@@ -161,6 +162,7 @@ onMounted(() => {
       cursor: pointer;
       transition: all 0.3s ease;
       overflow: hidden;
+      max-width: 450px;
 
       & .card-header {
         display: flex;
@@ -193,9 +195,12 @@ onMounted(() => {
           line-height: 1.4;
           margin: 0;
           display: -webkit-box;
+          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          height: 100px;
+          text-overflow: ellipsis;
+          height: 90px;
+          max-width: 254px;
         }
       }
 
@@ -203,8 +208,6 @@ onMounted(() => {
         padding: 1rem 1.5rem;
 
         & .info-item {
-          align-items: center;
-          gap: 0.75rem;
           padding: 0.75rem;
           margin-bottom: 0.5rem;
           background: rgba(102, 126, 234, 0.08);
@@ -221,6 +224,8 @@ onMounted(() => {
             font-weight: 600;
             color: #4a5568;
             min-width: 60px;
+            margin-left: 4px;
+            margin-right: 4px;
           }
 
           & .value {
@@ -281,33 +286,6 @@ onMounted(() => {
   }
 
   /* Адаптивность */
-  @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .main-container {
-      padding: 15px;
-    }
-
-    .title {
-      font-size: 1.1rem;
-    }
-
-    .card-header {
-      padding: 1rem 1rem 0;
-    }
-
-    .title-container {
-      padding: 0 1rem;
-    }
-
-    .card-content {
-      padding: 0.5rem 1rem;
-    }
-  }
-
   @media (max-width: 480px) {
     .update-btn {
       padding: 0.75rem 1.5rem;
@@ -319,6 +297,51 @@ onMounted(() => {
       align-items: flex-start;
       gap: 0.5rem;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .main-container {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .card-header {
+    padding: 1rem 1rem 0;
+  }
+
+  .title-container {
+    padding: 0 1rem;
+  }
+
+  .card-content {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .card {
+    width: 400px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .card {
+    width: 450px;
+  }
+}
+
+@media (min-width: 1180px) {
+  .card {
+    width: 350px;
   }
 }
 </style>
