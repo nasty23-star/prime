@@ -205,8 +205,6 @@ onMounted(() => {
         padding: 1rem 1.5rem;
 
         & .info-item {
-          align-items: center;
-          gap: 0.75rem;
           padding: 0.75rem;
           margin-bottom: 0.5rem;
           background: rgba(102, 126, 234, 0.08);
@@ -223,6 +221,8 @@ onMounted(() => {
             font-weight: 600;
             color: #4a5568;
             min-width: 60px;
+            margin-left: 4px;
+            margin-right: 4px;
           }
 
           & .value {
