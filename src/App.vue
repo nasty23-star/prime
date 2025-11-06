@@ -12,10 +12,6 @@ import { RouterView } from 'vue-router'
 </template>
 
 <style scoped>
-.container {
-  padding: 20px;
-}
-
 header {
   width: auto;
   background: linear-gradient(135deg, #72beca 0%, #366ea6 100%);
@@ -30,4 +26,18 @@ header {
   top: 0;
   z-index: 1000;
 }
+
+@media (min-width: 420px) {
+  .container {
+    padding: 20px;
+  }
+}
+
+/* @media (min-width: 900px) {
+
+ .main-container
+ {
+  padding: 0px;
+}
+} */
 </style>
