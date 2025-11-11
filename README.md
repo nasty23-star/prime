@@ -87,3 +87,23 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### Docker
+
+\# Image build
+
+```sh
+docker build -t prime .
+```
+
+\# Container start
+
+```sh
+docker run -p 3000:80 prime
+```
+
+\# Or with docker-compose
+
+```sh
+docker-compose up -d
+```
