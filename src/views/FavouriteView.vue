@@ -9,7 +9,9 @@ import router from '@/router'
 
 const dataStore = useDataStore()
 
-const getFavouriteCards =  computed(() => dataStore.dataCards.filter((card) => card.favourite === true))
+const getFavouriteCards = computed(() =>
+  dataStore.dataCards.filter((card) => card.favourite === true),
+)
 
 onMounted(() => {
   dataStore.getData()
@@ -350,4 +352,3 @@ const toNewsItem = (itemId: number) => {
   }
 }
 </style>
-
