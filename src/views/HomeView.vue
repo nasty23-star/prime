@@ -59,10 +59,9 @@ const toNewsItem = (itemId: number) => {
               :icon="card.favourite ? 'pi pi-heart-fill' : 'pi pi-heart'"
               iconPos="right"
               size="large"
-              @click="dataStore.toggleFavourite(card.id)"
+              @click="dataStore.toggleFavourite(card.id, $event)"
               :title="card.favourite ? 'Убрать из избранного' : 'Добавить в избранное'"
               class="favourite-btn"
-              :style="{ opacity: card.favourite ? 0.5 : 1 }"
             />
           </div>
         </template>
