@@ -25,7 +25,12 @@ export const useDataStore = defineStore('data', () => {
       )
 
       const result = await Promise.all(promises)
-      dataCards.value = result.filter((item) => item !== null)
+      dataCards.value = result
+        .filter((item) => item !== null)
+        .map((item) => ({
+          ...item,
+          favourite: false,
+        }))
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -88,6 +93,14 @@ export const useDataStore = defineStore('data', () => {
     localStorage.setItem('visitedCards', JSON.stringify(visitedCards.value))
   }
 
+  const toggleFavourite = (itemId: number) => {
+    event?.stopPropagation()
+    const card = dataCards.value.find((card) => card.id === itemId)
+    if (card) {
+      card.favourite = !card.favourite
+    }
+  }
+
   return {
     getData,
     loading,
@@ -97,5 +110,6 @@ export const useDataStore = defineStore('data', () => {
     newsIds,
     getNewsIds,
     newNewsIds,
+    toggleFavourite,
   }
 })

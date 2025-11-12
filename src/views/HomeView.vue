@@ -5,6 +5,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 import { onMounted } from 'vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useDataStore } from '@/stores/data'
+import router from '@/router'
 
 const dataStore = useDataStore()
 
@@ -14,6 +15,13 @@ onMounted(() => {
   }
   dataStore.getData()
 })
+
+const toNewsItem = (itemId: number) => {
+  router.push({
+    name: 'news-item',
+    params: { id: itemId.toString() },
+  })
+}
 </script>
 
 <template>
@@ -21,7 +29,7 @@ onMounted(() => {
     <div class="button">
       <Button
         label="Update News"
-        icon="pi pi-refresh"
+        icon="pi pi-refresh icon"
         iconPos="right"
         size="large"
         @click="dataStore.getData"
@@ -35,52 +43,60 @@ onMounted(() => {
       <p class="loading-text">Loading latest news...</p>
     </div>
     <div v-else-if="dataStore.dataCards.length > 0" class="grid">
-      <router-link v-for="card in dataStore.dataCards" :key="card.id" :to="`/news/${card.id}`">
-        <Card
-          class="card"
-          :class="{
-            visited: dataStore.visitedCards.includes(card.id),
-          }"
-        >
-          <template #header>
-            <div class="card-header">
-              <i class="pi pi-bolt icon"></i>
-            </div>
-          </template>
+      <Card
+        v-for="card in dataStore.dataCards"
+        :key="card.id"
+        class="card"
+        :class="{
+          visited: dataStore.visitedCards.includes(card.id),
+        }"
+        @click="toNewsItem(card.id)"
+      >
+        <template #header>
+          <div class="card-header">
+            <i class="pi pi-bolt icon"></i>
+            <Button
+              icon="pi pi-heart icon"
+              iconPos="right"
+              size="large"
+              @click="dataStore.toggleFavourite(card.id)"
+              class="update-btn"
+            />
+          </div>
+        </template>
 
-          <template #title>
-            <div class="title-container">
-              <span class="label">News Title:</span>
-              <h3 class="title">
-                {{ card.title }}
-              </h3>
-            </div>
-          </template>
+        <template #title>
+          <div class="title-container">
+            <span class="label">News Title:</span>
+            <h3 class="title">
+              {{ card.title }}
+            </h3>
+          </div>
+        </template>
 
-          <template #content>
-            <div class="card-content">
-              <div class="info-item">
-                <i class="pi pi-star icon"></i>
-                <span class="label">Rating:</span>
-                <span class="value">{{ card.score }}</span>
-              </div>
-
-              <div class="info-item">
-                <i class="pi pi-user icon"></i>
-                <span class="label">Author:</span>
-                <span class="value">{{ card.by }}</span>
-              </div>
+        <template #content>
+          <div class="card-content">
+            <div class="info-item">
+              <i class="pi pi-star icon"></i>
+              <span class="label">Rating:</span>
+              <span class="value">{{ card.score }}</span>
             </div>
-          </template>
 
-          <template #footer>
-            <div class="card-footer">
-              <i class="pi pi-calendar icon"></i>
-              <span class="date">{{ dateFormatter(card.time) }}</span>
+            <div class="info-item">
+              <i class="pi pi-user icon"></i>
+              <span class="label">Author:</span>
+              <span class="value">{{ card.by }}</span>
             </div>
-          </template>
-        </Card>
-      </router-link>
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="card-footer">
+            <i class="pi pi-calendar icon"></i>
+            <span class="date">{{ dateFormatter(card.time) }}</span>
+          </div>
+        </template>
+      </Card>
     </div>
 
     <div v-else class="empty-state">
