@@ -35,9 +35,6 @@ onMounted(async () => {
 
 <template>
   <main class="main-container">
-    <router-link to="/">
-      <Button label="Back" icon="pi pi-home" iconPos="right" size="large" class="back-btn" />
-    </router-link>
     <div v-if="newsStore.loadingNews" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="text">Loading news item...</p>
@@ -53,7 +50,15 @@ onMounted(async () => {
         <template #header>
           <div class="card-header">
             <i class="pi pi-hashtag icon"></i>
-            <span class="badge">ID: {{ newsStore.newsItem.id }}</span>
+            <Button
+              :icon="newsStore.newsItem.favourite ? 'pi pi-heart-fill' : 'pi pi-heart'"
+              iconPos="right"
+              size="large"
+              @click="dataStore.toggleFavourite(newsStore.newsItem.id)"
+              :title="newsStore.newsItem.favourite ? 'Убрать из избранного' : 'Добавить в избранное'"
+              class="favourite-btn"
+              :style="{ opacity: newsStore.newsItem.favourite ? 0.5 : 1 }"
+            />
           </div>
         </template>
 
@@ -250,15 +255,6 @@ onMounted(async () => {
     & .icon {
       font-size: 1.5rem;
       color: #667eea;
-    }
-
-    & .badge {
-      background: linear-gradient(45deg, #3732b3, #4ecdc4);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
     }
   }
 
