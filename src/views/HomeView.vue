@@ -56,11 +56,13 @@ const toNewsItem = (itemId: number) => {
           <div class="card-header">
             <i class="pi pi-bolt icon"></i>
             <Button
-              icon="pi pi-heart icon"
+              :icon="card.favourite ? 'pi pi-heart-fill' : 'pi pi-heart'"
               iconPos="right"
               size="large"
               @click="dataStore.toggleFavourite(card.id)"
-              class="update-btn"
+              :title="card.favourite ? 'Убрать из избранного' : 'Добавить в избранное'"
+              class="favourite-btn"
+              :style="{ opacity: card.favourite ? 0.5 : 1 }"
             />
           </div>
         </template>
@@ -189,6 +191,10 @@ const toNewsItem = (itemId: number) => {
         & .icon {
           font-size: 1.5rem;
           color: #667eea;
+        }
+
+        & .favourite-btn {
+          background-color: #667eea;
         }
       }
       .title-container {
