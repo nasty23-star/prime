@@ -51,11 +51,13 @@ onMounted(async () => {
           <div class="card-header">
             <i class="pi pi-hashtag icon"></i>
             <Button
-              :icon="newsStore.newsItem.favourite ? 'pi pi-heart-fill' : 'pi pi-heart'"
+              :icon="dataStore.favouriteCards.includes(newsStore.newsItem.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
               iconPos="right"
               size="large"
               @click="dataStore.toggleFavourite(newsStore.newsItem.id)"
-              :title="newsStore.newsItem.favourite ? 'Убрать из избранного' : 'Добавить в избранное'"
+              :title="
+                dataStore.favouriteCards.includes(newsStore.newsItem.id) ? 'Убрать из избранного' : 'Добавить в избранное'
+              "
               class="favourite-btn"
               :style="{ opacity: newsStore.newsItem.favourite ? 0.5 : 1 }"
             />
