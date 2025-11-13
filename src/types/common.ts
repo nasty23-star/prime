@@ -9,6 +9,7 @@ export interface NewsItem {
   deleted?: boolean
   descendants?: number
   kids?: number[]
+  favourite: boolean
 }
 
 export interface NHComment {

@@ -2,17 +2,18 @@
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useDataStore } from '@/stores/data'
 import router from '@/router'
 
 const dataStore = useDataStore()
 
+const getFavouriteCards = computed(() =>
+  dataStore.dataCards.filter((card) => card.favourite === true),
+)
+
 onMounted(() => {
-  if (dataStore.newNewsIds) {
-    dataStore.getNewsIds()
-  }
   dataStore.getData()
 })
 
@@ -26,30 +27,15 @@ const toNewsItem = (itemId: number) => {
 
 <template>
   <main class="main-container">
-    <div class="button">
-      <Button
-        label="Update News"
-        icon="pi pi-refresh icon"
-        iconPos="right"
-        size="large"
-        @click="dataStore.getData"
-        :loading="dataStore.loading"
-        class="update-btn"
-      />
-    </div>
-
     <div v-if="dataStore.loading" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading latest news...</p>
     </div>
-    <div v-else-if="dataStore.dataCards.length > 0" class="grid">
+    <div v-else-if="dataStore.favouriteCards.length > 0" class="grid">
       <Card
-        v-for="card in dataStore.dataCards"
+        v-for="card in getFavouriteCards"
         :key="card.id"
         class="card"
-        :class="{
-          visited: dataStore.visitedCards.includes(card.id),
-        }"
         @click="toNewsItem(card.id)"
       >
         <template #header>
@@ -99,10 +85,9 @@ const toNewsItem = (itemId: number) => {
         </template>
       </Card>
     </div>
-
     <div v-else class="empty-state">
       <i class="pi pi-inbox icon"></i>
-      <p class="text">No news available</p>
+      <p class="text">No favourite news available</p>
     </div>
   </main>
 </template>
@@ -222,7 +207,7 @@ const toNewsItem = (itemId: number) => {
           overflow: hidden;
           text-overflow: ellipsis;
           height: 90px;
-          max-width: 254px;
+          width: 254px;
         }
       }
 
