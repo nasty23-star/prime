@@ -139,7 +139,7 @@ export const useDataStore = defineStore('data', () => {
       // Обновляем массив favouriteCards
       if (card.favourite) {
         if (!favouriteCards.value.includes(itemId)) {
-          favouriteCards.value.push(itemId)
+          favouriteCards.value.unshift(itemId)
         }
       } else {
         favouriteCards.value = favouriteCards.value.filter((id) => id !== itemId)
