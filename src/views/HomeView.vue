@@ -2,12 +2,11 @@
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useDataStore } from '@/stores/data'
 import router from '@/router'
 import { storeToRefs } from 'pinia'
-import type { NewsItem } from '@/types/common.ts'
 import ThePagination from '@/components/ThePagination.vue'
 
 const dataStore = useDataStore()
@@ -22,11 +21,14 @@ const toNewsItem = (itemId: number) => {
 // Пагинация
 const itemsPerPage = ref(5)
 const currentPage = ref(1)
-const paginatedItems = ref<NewsItem[]>([])
-const handleComputedChange = (items: NewsItem[]) => {
-  paginatedItems.value = items
-}
 
+const paginatedItems = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value
+  const endIndex = startIndex + itemsPerPage.value
+  return cards.value.slice(startIndex, endIndex)
+})
+
+// Достаем реактивные данные из стора
 const { dataCards } = storeToRefs(dataStore)
 const cards = dataCards
 
@@ -58,8 +60,9 @@ onMounted(() => {
       :itemsPerPage="itemsPerPage"
       :cards="cards"
       :currentPage="currentPage"
-      @computed-change="handleComputedChange"
+      :paginated-items="paginatedItems"
       @update:currentPage="currentPage = $event"
+      @update:items-per-page="itemsPerPage = $event"
     />
 
     <!-- Контент -->

@@ -1,40 +1,15 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref } from 'vue'
 
-// interface Props {
-// currentPage: number,
-// itemsPerPage: number
 
-// }
 // Состояние пагинации
 
-const props = defineProps(['currentPage', 'itemsPerPage', 'cards'])
-const emit = defineEmits(['computedChange', 'update:currentPage'])
+const props = defineProps(['currentPage', 'itemsPerPage', 'cards', 'paginatedItems'])
 
-const paginatedItems = computed(() => {
-  const startIndex = (props.currentPage - 1) * props.itemsPerPage
-  const endIndex = startIndex + props.itemsPerPage
-  return props.cards.slice(startIndex, endIndex)
-})
-
-// Отслеживаем изменения computed и эмитим событие
-watch(
-  paginatedItems,
-  (newValue) => {
-    emit('computedChange', newValue)
-  },
-  { immediate: true },
-)
-
-// const emit = defineEmits<{
-//   (e: 'update:modelValue', value: string): void
-//   (e: 'blur'): void
-// }>()
-// const currentPage = ref(1)
-// const itemsPerPage = ref(5)
+const emit = defineEmits(['computedChange', 'update:currentPage', 'update:itemsPerPage'])
 
 // Опции для выбора количества элементов
-//const itemsPerPageOptions = ref([5, 10, 15, 20])
+const itemsPerPageOptions = ref([5, 10, 15, 20])
 
 // Вычисляем сколько будет страниц
 const totalPages = computed(() => {
@@ -59,14 +34,22 @@ function goToPage(page: number) {
   }
 }
 
+const onItemsPerPageChange = (event: Event) => {
+  const target = event.target as HTMLSelectElement
+  const newItemsPerPage = parseInt(target.value)
+  emit('update:itemsPerPage', newItemsPerPage)
+  emit('update:currentPage', 1) // Сбрасываем на первую страницу
+}
+
 // Генерация номеров страниц для отображения
 const visiblePages = computed(() => {
   const pages = []
   const maxVisiblePages = 5
 
-  let startPage = Math.max(1, props.currentPage.value - Math.floor(maxVisiblePages / 2))
+  let startPage = Math.max(1, props.currentPage - Math.floor(maxVisiblePages / 2))
   const endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1)
 
+  // Корректируем startPage если видимых страниц меньше maxVisiblePages
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1)
   }
@@ -77,24 +60,35 @@ const visiblePages = computed(() => {
 
   return pages
 })
+
+// Проверяем нужно ли показывать многоточие в конце
+const showEndEllipsis = computed(() => {
+  return totalPages.value > visiblePages.value[visiblePages.value.length - 1]
+})
+
+// Проверяем нужно ли показывать многоточие в начале
+const showStartEllipsis = computed(() => {
+  return visiblePages.value[0] > 1
+})
 </script>
 <template>
   <div class="pagination-container">
     <div class="pagination-controls">
       <!-- Селектор количества элементов -->
-      <!-- <div class="items-per-page-selector">
-          <label for="itemsPerPage">Items per page:</label>
-          <select
-            id="itemsPerPage"
-            v-model="itemsPerPage"
-            @change="currentPage = 1"
-            class="page-select"
-          >
-            <option v-for="option in itemsPerPageOptions" :key="option" :value="option">
-              {{ option }}
-            </option>
-          </select>
-        </div> -->
+      <div class="items-per-page-selector">
+        <label for="itemsPerPage">Items per page:</label>
+
+        <select
+          id="itemsPerPage"
+          :value="itemsPerPage"
+          @change="onItemsPerPageChange"
+          class="page-select"
+        >
+          <option v-for="option in itemsPerPageOptions" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
 
       <!-- Информация о странице -->
       <div class="pagination-info">
@@ -113,9 +107,12 @@ const visiblePages = computed(() => {
         <i class="pi pi-chevron-left"></i>
         Previous
       </button>
-
       <!-- Номера страниц -->
+      <!-- Номера страниц с многоточиями -->
       <div class="page-numbers">
+        <!-- Многоточие в начале -->
+        <span v-if="showStartEllipsis" class="page-ellipsis"> ... </span>
+
         <button
           v-for="page in visiblePages"
           :key="page"
@@ -125,9 +122,8 @@ const visiblePages = computed(() => {
           {{ page }}
         </button>
 
-        <span v-if="totalPages > visiblePages[visiblePages.length - 1]" class="page-ellipsis">
-          ...
-        </span>
+        <!-- Многоточие в конце -->
+        <span v-if="showEndEllipsis" class="page-ellipsis"> ... </span>
       </div>
 
       <button
