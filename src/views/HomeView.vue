@@ -2,19 +2,14 @@
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { dateFormatter } from '@/utils/dateHelper'
 import { useDataStore } from '@/stores/data'
 import router from '@/router'
+import { storeToRefs } from 'pinia'
+import ThePagination from '@/components/ThePagination.vue'
 
 const dataStore = useDataStore()
-
-onMounted(() => {
-  if (dataStore.newNewsIds) {
-    dataStore.getNewsIds()
-  }
-  dataStore.getData()
-})
 
 const toNewsItem = (itemId: number) => {
   router.push({
@@ -22,10 +17,32 @@ const toNewsItem = (itemId: number) => {
     params: { id: itemId.toString() },
   })
 }
+
+// Пагинация
+const itemsPerPage = ref(5)
+const currentPage = ref(1)
+
+const paginatedItems = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value
+  const endIndex = startIndex + itemsPerPage.value
+  return cards.value.slice(startIndex, endIndex)
+})
+
+// Достаем реактивные данные из стора
+const { dataCards } = storeToRefs(dataStore)
+const cards = dataCards
+
+onMounted(() => {
+  if (dataStore.newNewsIds) {
+    dataStore.getNewsIds()
+  }
+  dataStore.getData()
+})
 </script>
 
 <template>
   <main class="main-container">
+    <!-- Кнопка обновление данных -->
     <div class="button">
       <Button
         label="Update News"
@@ -38,13 +55,25 @@ const toNewsItem = (itemId: number) => {
       />
     </div>
 
+    <!-- Пагинация сверху -->
+    <ThePagination
+      :itemsPerPage="itemsPerPage"
+      :cards="cards"
+      :currentPage="currentPage"
+      :paginated-items="paginatedItems"
+      @update:currentPage="currentPage = $event"
+      @update:items-per-page="itemsPerPage = $event"
+    />
+
+    <!-- Контент -->
     <div v-if="dataStore.loading" class="loading-container">
       <ProgressSpinner class="spinner" />
       <p class="loading-text">Loading latest news...</p>
     </div>
+
     <div v-else-if="dataStore.dataCards.length > 0" class="grid">
       <Card
-        v-for="card in dataStore.dataCards"
+        v-for="card in paginatedItems"
         :key="card.id"
         class="card"
         :class="{
@@ -52,6 +81,7 @@ const toNewsItem = (itemId: number) => {
         }"
         @click="toNewsItem(card.id)"
       >
+        <!-- Остальной контент карточки без изменений -->
         <template #header>
           <div class="card-header">
             <i class="pi pi-bolt icon"></i>
@@ -99,11 +129,13 @@ const toNewsItem = (itemId: number) => {
         </template>
       </Card>
     </div>
-
+    <!-- Если нет карточек -->
     <div v-else class="empty-state">
       <i class="pi pi-inbox icon"></i>
       <p class="text">No news available</p>
     </div>
+
+    <!-- Пагинация снизу (дублируется для удобства) -->
   </main>
 </template>
 
@@ -134,6 +166,7 @@ const toNewsItem = (itemId: number) => {
     }
   }
 
+  /* Остальные существующие стили */
   .loading-container {
     display: flex;
     flex-direction: column;
@@ -307,63 +340,94 @@ const toNewsItem = (itemId: number) => {
     }
   }
 
-  /* Адаптивность */
+  /* Адаптивность для пагинации */
+  @media (max-width: 768px) {
+    .pagination-controls {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+
+    .pagination-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page-numbers {
+      order: -1;
+      margin: 0;
+    }
+
+    .pagination-btn {
+      min-width: 120px;
+    }
+  }
+
   @media (max-width: 480px) {
-    .update-btn {
-      padding: 0.75rem 1.5rem;
+    .pagination-container {
+      padding: 1rem;
+    }
+
+    .page-numbers {
+      gap: 0.1rem;
+    }
+
+    .page-btn {
+      min-width: 40px;
+      padding: 0.6rem 0.8rem;
       font-size: 0.9rem;
     }
 
-    .info-item {
+    .items-per-page-selector {
       flex-direction: column;
-      align-items: flex-start;
       gap: 0.5rem;
     }
   }
-}
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  /* Существующие медиа-запросы */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .main-container {
+      padding: 15px;
+    }
+
+    .title {
+      font-size: 1.1rem;
+    }
+
+    .card-header {
+      padding: 1rem 1rem 0;
+    }
+
+    .title-container {
+      padding: 0 1rem;
+    }
+
+    .card-content {
+      padding: 0.5rem 1rem;
+    }
   }
 
-  .main-container {
-    padding: 15px;
+  @media (min-width: 900px) {
+    .card {
+      width: 400px;
+    }
   }
 
-  .title {
-    font-size: 1.1rem;
+  @media (min-width: 1000px) {
+    .card {
+      width: 450px;
+    }
   }
 
-  .card-header {
-    padding: 1rem 1rem 0;
-  }
-
-  .title-container {
-    padding: 0 1rem;
-  }
-
-  .card-content {
-    padding: 0.5rem 1rem;
-  }
-}
-
-@media (min-width: 900px) {
-  .card {
-    width: 400px;
-  }
-}
-
-@media (min-width: 1000px) {
-  .card {
-    width: 450px;
-  }
-}
-
-@media (min-width: 1180px) {
-  .card {
-    width: 350px;
+  @media (min-width: 1180px) {
+    .card {
+      width: 350px;
+    }
   }
 }
 </style>
