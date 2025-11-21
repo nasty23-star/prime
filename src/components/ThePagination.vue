@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-
 // Состояние пагинации
 
 const props = defineProps(['currentPage', 'itemsPerPage', 'cards', 'paginatedItems'])
